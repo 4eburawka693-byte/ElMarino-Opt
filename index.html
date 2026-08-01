@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="uk" class="notranslate" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ElMarino Опт</title>
+
+<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+<link rel="dns-prefetch" href="https://docs.google.com">
+<link rel="dns-prefetch" href="https://i.postimg.cc">
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
+<link rel="preconnect" href="https://i.postimg.cc" crossorigin>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: system-ui, sans-serif; }
+.product-card { transition: all 0.2s ease; cursor: pointer; }
+.product-card:active { transform: scale(0.98); }
+.clamp-desc {
+display: -webkit-box !important;
+-webkit-line-clamp: 2 !important;
+-webkit-box-orient: vertical !important;
+overflow: hidden !important;
+text-overflow: ellipsis !important;
+}
+#lightbox-img {
+transition: transform 0.1s ease-out;
+transform-origin: center center;
+touch-action: none;
+}
+</style>
+</head>
+<body class="bg-[#f4f5f7] notranslate">
+
+<div class="max-w-4xl mx-auto pb-20">
+<div class="w-full overflow-hidden shadow-sm">
+<img src="https://i.postimg.cc/KvynpRrT/1782584017691.jpg" alt="ElMarino Banner" class="w-full h-auto object-cover block" loading="eager" fetchpriority="high">
+</div>
+
+<header class="bg-[#242426] text-white p-3 sticky top-0 z-40 shadow-md">
+<div class="flex justify-between items-center gap-1.5">
+<div class="flex items-center gap-1.5 min-w-0">
+<button onclick="goHome()" class="flex items-center justify-center w-10 h-10 bg-[#2d2d30] active:bg-[#3d3d42] rounded-2xl border border-[#3a3a3d] shadow-inner transition-colors shrink-0">
+🏠
+</button>
+<button onclick="showReviewsModal()" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner truncate">
+⭐ Відгуки
+</button>
+</div>
+
+<div class="flex items-center gap-1.5 shrink-0">
+<span class="bg-amber-400/20 border border-amber-400/30 text-amber-400 px-3 py-2 rounded-2xl text-[11px] sm:text-xs font-bold">📦 ОПТОВИЙ ПРАЙС</span>
+<button onclick="showCart()" class="flex items-center gap-1.5 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl font-medium transition-colors">
+🛒 <span id="cart-count" class="bg-amber-400 text-[#242426] text-xs rounded-full px-2 py-0.5 font-bold">0</span>
+</button>
+</div>
+</div>
+</header>
+
+<div class="p-4 flex flex-col gap-3">
+<div class="flex gap-2 items-center">
+<div class="relative flex-1">
+<input id="search" type="text" placeholder="🔍 Пошук оптових товарів..."
+class="w-full p-3.5 pl-4 rounded-2xl border border-slate-200 focus:border-amber-500 outline-none shadow-sm text-sm"
+onkeyup="filterProducts()">
+</div>
+<button onclick="resetFilters()" class="bg-white text-slate-700 h-12 px-4 rounded-2xl text-sm font-medium border border-slate-200 active:bg-slate-50 transition-colors shadow-sm">Всі</button>
+
+<div class="relative">
+<button onclick="toggleSortMenu()" class="w-12 h-12 bg-white text-slate-700 rounded-2xl text-base font-medium border border-slate-200 active:bg-slate-50 transition-colors flex items-center justify-center shadow-sm">
+📊
+</button>
+<div id="sort-menu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border z-50 overflow-hidden">
+<button onclick="setSortOrder('default')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">Без сортування</button>
+<button onclick="setSortOrder('low-to-high')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">💰 Від дешевих до дорогих</button>
+<button onclick="setSortOrder('high-to-low')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 block">💵 Від дорогих до дешевих</button>
+</div>
+</div>
+</div>
+
+<div id="filter-indicator" class="text-xs text-slate-700 px-3 py-2 hidden flex justify-between items-center bg-amber-50 rounded-xl border border-amber-200">
+<span id="filter-indicator-text"></span>
+<button onclick="goHome()" class="text-amber-700 font-bold ml-2">Скинути ✕</button>
+</div>
+</div>
+
+<div id="subcat-anchor" class="scroll-mt-20"></div>
+
+<div class="px-4 mb-3 flex flex-col gap-3">
+<div id="categories" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+<div id="subcategories" class="hidden grid grid-cols-2 sm:grid-cols-3 gap-2 bg-[#f2e6dc] p-4 rounded-2xl border-2 border-[#dfc3b0] shadow-inner"></div>
+</div>
+
+<div id="products" class="px-4 grid grid-cols-2 gap-4">
+<div class="col-span-2 text-center py-12 text-slate-400 font-medium animate-pulse">
+⏳ Завантаження оптових товарів...
+</div>
+</div>
+</div>
+
+<div id="reviews-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="hideReviewsModal()">
+<div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative max-h-[80vh] flex flex-col" onclick="event.stopPropagation()">
+<button onclick="hideReviewsModal()" class="absolute top-4 right-4 text-slate-400 text-xl p-1 hover:text-slate-600">✕</button>
+<h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
+<span class="text-amber-500">⭐</span> Відгуки
+</h3>
+<div id="reviews-list" class="space-y-4 overflow-y-auto flex-1 pr-1 text-sm text-slate-600 my-2">
+<div class="text-center py-6 text-slate-400">Завантаження відгуків...</div>
+</div>
+<div class="border-t pt-4 mt-2">
+<a href="https://t.me/ElMarino_we" target="_blank" class="block w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d] text-center text-sm">
+✍️ Написати свій відгук у Telegram
+</a>
+</div>
+</div>
+</div>
+
+<!-- ПОВНОЕКРАННА КАРТОЧКА ТОВАРУ -->
+<div id="product-modal" class="hidden fixed inset-0 bg-white z-50 flex flex-col" onclick="hideProductModal()">
+<div class="bg-white w-full h-full flex flex-col relative" onclick="event.stopPropagation()">
+<button onclick="hideProductModal()" class="fixed top-4 right-4 bg-[#242426]/70 text-white w-10 h-10 rounded-full flex items-center justify-center text-base font-bold z-50 shadow-lg border border-white/20 active:scale-95">✕</button>
+
+<div class="overflow-y-auto flex-1 pb-28">
+<div id="modal-swipe-zone" class="w-full h-80 sm:h-96 bg-slate-50 flex items-center justify-center overflow-hidden relative cursor-pointer" onclick="openFullscreenPhoto()">
+<img id="modal-product-image" src="" class="max-w-full max-h-full object-contain pointer-events-none">
+<button id="prev-photo-btn" onclick="changePhoto(-1); event.stopPropagation();" class="absolute left-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none z-10">＜</button>
+<button id="next-photo-btn" onclick="changePhoto(1); event.stopPropagation();" class="absolute right-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none z-10">＞</button>
+<span id="photo-counter" class="absolute bottom-3 right-3 bg-[#242426]/60 text-white text-xs px-2.5 py-1 rounded-full font-medium"></span>
+</div>
+
+<div class="p-5">
+<span id="modal-product-category" class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100"></span>
+<h2 id="modal-product-name" class="text-2xl font-bold text-slate-800 mt-3 leading-tight"></h2>
+<p id="modal-product-description" class="text-slate-600 text-sm mt-3 whitespace-pre-line leading-relaxed"></p>
+
+<div id="size-selector-block" class="hidden mt-5 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+<span id="modal-size-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть варіант:</span>
+<select id="modal-size-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="updateModalPrice()"></select>
+</div>
+
+<div id="color-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+<span id="modal-color-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть колір:</span>
+<select id="modal-color-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="syncPhotoByColor()"></select>
+</div>
+
+<div id="scent-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+<span id="modal-scent-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть запах:</span>
+<select id="modal-scent-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]"></select>
+</div>
+
+<div class="mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+<span class="text-slate-600 font-medium text-sm pl-2">Кількість:</span>
+<div class="flex items-center gap-1">
+<button onclick="changeModalQty(-1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">-</button>
+<span id="modal-qty" class="w-12 text-center font-bold text-slate-800 text-lg">1</span>
+<button onclick="changeModalQty(1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex items-center justify-between gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
+<div>
+<span class="text-slate-400 text-xs block font-medium">Оптова ціна</span>
+<span id="modal-product-price" class="text-2xl font-black text-slate-800"></span>
+</div>
+<button id="modal-product-btn" class="flex-1 bg-[#242426] active:bg-[#323235] text-amber-400 py-4 rounded-2xl font-bold transition-all shadow-lg text-center border border-[#3a3a3d] text-base">
+Додати в замовлення
+</button>
+</div>
+</div>
+</div>
+
+<div id="fullscreen-lightbox" class="hidden fixed inset-0 bg-slate-950/95 z-[60] flex flex-col items-center justify-center p-4" onclick="closeFullscreenPhoto()">
+<button onclick="closeFullscreenPhoto(); event.stopPropagation();" class="fixed top-6 right-6 text-white text-3xl font-light hover:text-slate-300 z-[70] bg-black/40 w-12 h-12 rounded-full flex items-center justify-center">✕</button>
+<div id="lightbox-content-area" class="w-full h-full flex items-center justify-center relative overflow-hidden">
+<img id="lightbox-img" src="" class="max-w-full max-h-full object-contain">
+</div>
+<button id="lightbox-prev-btn" onclick="changePhoto(-1); updateLightboxImage(); event.stopPropagation();" class="fixed left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＜</button>
+<button id="lightbox-next-btn" onclick="changePhoto(1); updateLightboxImage(); event.stopPropagation();" class="fixed right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＞</button>
+</div>
+
+<div id="cart-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end z-50" onclick="hideCart()">
+<div class="bg-white w-full rounded-t-3xl max-h-[85vh] overflow-auto p-5 flex flex-col" onclick="event.stopPropagation()">
+<div class="flex justify-between mb-4 items-center">
+<h2 class="text-2xl font-bold text-slate-800">Оптовий кошик</h2>
+<button onclick="hideCart()" class="text-3xl text-slate-400 p-1">✕</button>
+</div>
+<div id="cart-items" class="space-y-4 overflow-y-auto flex-1"></div>
+<div class="mt-4 border-t pt-4">
+<div class="flex justify-between text-xl font-bold text-slate-800">
+<span>Разом:</span>
+<span id="cart-total">0 грн</span>
+</div>
+<button onclick="showCheckoutModal()" class="mt-4 w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-2xl text-lg font-bold transition-colors shadow-lg text-center border border-[#3a3a3d]">
+Оформити оптове замовлення
+</button>
+</div>
+</div>
+</div>
+
+<div id="checkout-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-[55]" onclick="hideCheckoutModal()">
+<div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
+<button onclick="hideCheckoutModal()" class="absolute top-4 right-4 text-slate-400 text-2xl p-1">✕</button>
+<h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">📝 Оформити опт замовлення</h3>
+
+<div class="space-y-4">
+<div>
+<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Назва компанії / Ім'я:</label>
+<input id="customer-name" type="text" placeholder="Наприклад: Магазин 'Продукти' / Олександр" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
+</div>
+<div>
+<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Номер телефону:</label>
+<input id="customer-phone" type="text" placeholder="Наприклад: +380960000000" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
+</div>
+<button onclick="submitOrder()" class="w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-xl font-bold text-base transition-all shadow-md mt-4 border border-[#3a3a3d]">
+🚀 Надіслати оптове замовлення
+</button>
+</div>
+</div>
+</div>
+
+<script>
+// НОВИЙ ID ОПТОВОЇ ТАБЛИЦІ
+const SHEET_ID = '1cOD58OZMbBNhZQeYU3zz90srFwKbAy6w451uOTMhZTA';
+const SPREADSHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+const REVIEWS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=відгуки`;
+
+tailwind.config = {
+theme: {
+extend: {
+screens: {
+'xs': '390px',
+}
+}
+}
+}
+
+let allProducts = [];
+let cart = [];
+let currentModalQty = 1;
+let currentPhotos = [];
+let currentPhotoIndex = 0;
+let currentProductIndex = null;
+
+let selectedCategory = null;
+let selectedSubcategory = null;
+let currentSearchTerm = "";
+let currentSortOrder = "default";
+
+let touchStartX = 0;
+let touchEndX = 0;
+let lightboxTouchStartX = 0;
+let lightboxTouchEndX = 0;
+
+let scale = 1;
+let translateX = 0;
+let translateY = 0;
+let initialDistance = 0;
+let lastTapTime = 0;
+
+let loadedReviews = [];
+
+function parseOptionsField(optionsStr) {
+let result = {
+sizeLabel: 'Оберіть розмір:',
+sizes: [],
+colorLabel: 'Оберіть колір:',
+colors: [],
+scentLabel: 'Оберіть запах:',
+scents: []
+};
+if (!optionsStr || optionsStr.trim() === "") return result;
+
+let normalized = optionsStr
+.replace(/([^;\r\n]+)\s+(Розмір|Цвет|Колір|Размер|Запах|Аромат|Вкус|Смак)/gi, '$1\n$2')
+.replace(/;/g, '\n');
+
+const lines = normalized.split(/\r?\n/);
+
+lines.forEach(line => {
+const match = line.match(/([^\n\r]+?)\s*:\s*([^\n\r]+)/);
+if (match && match[1] && match[2]) {
+let rawLabel = match[1].trim();
+let rawValues = match[2].trim();
+
+if (/колір|кольори|цвет|цвета/i.test(rawLabel)) {
+let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+result.colorLabel = `${cleanLabel}:`;
+result.colors = rawValues.split(',').map(c => c.trim()).filter(Boolean);
+} else if (/запах|аромат|вкус|смак/i.test(rawLabel)) {
+let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+result.scentLabel = `${cleanLabel}:`;
+result.scents = rawValues.split(',').map(s => s.trim()).filter(Boolean);
+} else {
+let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+result.sizeLabel = `${cleanLabel}:`;
+result.sizes = rawValues.split(',').map(s => s.trim()).filter(Boolean);
+}
+}
+});
+return result;
+}
+
+function parseSizePrice(sizeStr, defaultPrice) {
+let sizeName = sizeStr;
+let price = String(defaultPrice).replace(/\s/g, '').replace(',', '.');
+
+if (sizeStr.includes('-')) {
+let parts = sizeStr.split('-');
+sizeName = parts[0].trim();
+let rawPricePart = parts[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
+if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
+price = parseFloat(rawPricePart).toFixed(2);
+}
+}
+else {
+let priceMatch = sizeStr.match(/\(([^)]+)\)/);
+if (priceMatch && priceMatch[1]) {
+sizeName = sizeStr.replace(/\s*\([^)]+\)\s*/g, '').trim();
+let rawPricePart = priceMatch[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
+if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
+price = parseFloat(rawPricePart).toFixed(2);
+}
+}
+}
+return { sizeName, price: parseFloat(price).toFixed(2) };
+}
+
+const parseCSV = (text) => {
+let p = '', r = [];
+let q = false;
+let row = [''];
+for (let i=0; i<text.length; i++) {
+let c = text[i];
+if (c === '"') { q = !q; continue; }
+if (c === ',' && !q) { row.push(''); continue; }
+if ((c === '\n' || c === '\r') && !q) {
+if (c === '\n' && text[i-1] === '\r') continue;
+r.push(row); row = ['']; continue;
+}
+row[row.length-1] += c;
+}
+if (row.length > 1 || row[0] !== '') r.push(row);
+return r;
+};
+
+window.addEventListener('popstate', function () {
+const modalOpen = !document.getElementById('product-modal').classList.contains('hidden');
+const cartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
+const lightboxOpen = !document.getElementById('fullscreen-lightbox').classList.contains('hidden');
+const checkoutOpen = !document.getElementById('checkout-modal').classList.contains('hidden');
+const reviewsOpen = !document.getElementById('reviews-modal').classList.contains('hidden');
+
+if (lightboxOpen) closeFullscreenPhoto(true);
+else if (checkoutOpen) hideCheckoutModal(true);
+else if (modalOpen) hideProductModal(true);
+else if (cartOpen) hideCart(true);
+else if (reviewsOpen) hideReviewsModal(true);
+});
+
+document.addEventListener('click', function(e) {
+const menu = document.getElementById('sort-menu');
+if (menu && !menu.classList.contains('hidden') && !e.target.closest('.relative')) {
+menu.classList.add('hidden');
+}
+});
+
+function showToast(message, type = 'success') {
+const toast = document.createElement('div');
+toast.className = 'notranslate';
+const bg = type === 'success' ? '#242426' : '#ef4444';
+const textColor = type === 'success' ? '#fbbf24' : '#ffffff';
+const borderStyle = type === 'success' ? 'border border-[#3a3a3d]' : '';
+toast.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${bg};color:${textColor};padding:12px 24px;border-radius:16px;font-weight:bold;z-index:9999;box-shadow:0 10px 25px rgba(0,0,0,0.2);font-size:14px;${borderStyle}`;
+toast.textContent = message;
+document.body.appendChild(toast);
+setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+async function loadReviewsFromSheet() {
+try {
+const response = await fetch(REVIEWS_URL);
+if (!response.ok) throw new Error("Не вдалося завантажити відгуки");
+const csvText = await response.text();
+const rows = parseCSV(csvText);
+
+loadedReviews = [];
+for (let i = 1; i < rows.length; i++) {
+const row = rows[i];
+if (row && row[0] && row[0].trim() !== '') {
+loadedReviews.push({
+name: row[0].trim(),
+text: row[1] ? row[1].trim() : '',
+rating: row[2] ? parseInt(row[2].trim()) : 5,
+date: row[3] ? row[3].trim() : ''
+});
+}
+}
+renderReviews();
+} catch (err) {
+console.error("Помилка завантаження відгуків:", err);
+document.getElementById('reviews-list').innerHTML = `<div class="text-center py-6 text-slate-400">Відгуки відсутні або вкладка не налаштована.</div>`;
+}
+}
+
+function renderReviews() {
+const container = document.getElementById('reviews-list');
+if (loadedReviews.length === 0) {
+container.innerHTML = `<div class="text-center py-10 text-slate-400">Відгуків поки немає.</div>`;
+return;
+}
+let html = '';
+loadedReviews.forEach(rev => {
+let stars = '⭐'.repeat(rev.rating || 5);
+html += `<div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+<div class="flex justify-between items-center mb-1.5">
+<span class="font-bold text-slate-800 text-sm">${rev.name}</span>
+<span class="text-xs text-amber-500 font-bold flex gap-0.5">${stars}</span>
+</div>
+<p class="text-slate-600 text-xs leading-relaxed whitespace-pre-line">${rev.text}</p>
+${rev.date ? `<div class="text-[10px] text-slate-400 mt-2 text-right">${rev.date}</div>` : ''}
+</div>`;
+});
+container.innerHTML = html;
+}
+
+function showReviewsModal() {
+document.getElementById('reviews-modal').classList.remove('hidden');
+history.pushState({modal: "reviews"}, null, null);
+loadReviewsFromSheet();
+}
+
+function hideReviewsModal(fromPopState = false) {
+document.getElementById('reviews-modal').classList.add('hidden');
+if (!fromPopState && window.history.state?.modal === "reviews") history.back();
+}
+
+async function loadProductsFromSheet() {
+const CACHE_KEY = 'elmarino_opt_products_cache';
+const CACHE_TIME_KEY = 'elmarino_opt_cache_time';
+const CACHE_EXPIRE = 4 * 60 * 1000;
+
+const cachedData = localStorage.getItem(CACHE_KEY);
+const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+const now = Date.now();
+
+if (cachedData && cachedTime && (now - cachedTime < CACHE_EXPIRE)) {
+allProducts = JSON.parse(cachedData);
+renderCategories();
+applyFilterAndSort();
+initSwipeListeners();
+return;
+}
+
+try {
+const response = await fetch(SPREADSHEET_URL);
+if (!response.ok) throw new Error(`Помилка:${response.status}`);
+const csvText = await response.text();
+
+let rows = parseCSV(csvText);
+allProducts = [];
+
+for (let i = 1; i < rows.length; i++) {
+const row = rows[i];
+if (row && row[0] && row[0].trim() !== '') {
+let imagesArray = [];
+if (row[4]) {
+imagesArray = row[4].split(',')
+.map(url => url.trim().replace(/[\r\n]/g, ''))
+.filter(Boolean);
+}
+let safePrice = row[2] ? row[2].trim() : '0,00';
+let rawCategory = row[1] ? row[1].trim() : 'Інше';
+let categoryPart = rawCategory;
+let subcategoryPart = null;
+
+if (rawCategory.includes('/')) {
+let parts = rawCategory.split('/');
+categoryPart = parts[0].trim();
+subcategoryPart = parts[1].trim();
+}
+
+allProducts.push({
+name: row[0].trim(),
+category: categoryPart,
+subcategory: subcategoryPart,
+price: safePrice,
+description: row[3] ? row[3].trim() : '',
+images: imagesArray,
+optionsField: row[5] ? row[5].trim() : '',
+searchTags: row[6] ? row[6].trim() : ''
+});
+}
+}
+
+localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
+localStorage.setItem(CACHE_TIME_KEY, now.toString());
+
+renderCategories();
+applyFilterAndSort();
+initSwipeListeners();
+} catch (error) {
+console.error(error);
+if (cachedData) {
+allProducts = JSON.parse(cachedData);
+renderCategories();
+applyFilterAndSort();
+initSwipeListeners();
+}
+}
+}
+
+function renderCategories() {
+const cats = [];
+allProducts.forEach(p => {
+if (p.category && !cats.includes(p.category)) cats.push(p.category);
+});
+
+let html = '';
+cats.forEach(cat => {
+const activeStyle = (cat === selectedCategory) ? 'border-[#3a3a3d] bg-[#242426] font-bold text-amber-400 scale-[1.02]' : 'bg-white text-slate-700 border-slate-200';
+html += `<div onclick="filterByCategory('${cat}')" class="${activeStyle} p-3 rounded-2xl shadow-sm text-center text-xs font-semibold cursor-pointer border hover:border-amber-400 transition-all">${cat}</div>`;
+});
+document.getElementById('categories').innerHTML = html;
+renderSubcategories();
+}
+
+function renderSubcategories() {
+const subContainer = document.getElementById('subcategories');
+if (!selectedCategory) {
+subContainer.classList.add('hidden');
+return;
+}
+
+const subcats = [];
+allProducts.forEach(p => {
+if (p.category === selectedCategory && p.subcategory && !subcats.includes(p.subcategory)) {
+subcats.push(p.subcategory);
+}
+});
+
+if (subcats.length === 0) {
+subContainer.classList.add('hidden');
+return;
+}
+
+subContainer.classList.remove('hidden');
+let html = '';
+subcats.forEach(sub => {
+const activeStyle = (sub === selectedSubcategory) ? 'border-[#3b2d2c] bg-[#4a3e3d] font-bold text-amber-400 shadow-md scale-[1.01]' : 'bg-white text-[#5c4a44] border-[#dfc3b0] hover:border-[#cbb09d]';
+html += `<div onclick="filterBySubcategory('${sub}')" class="${activeStyle} p-2.5 rounded-xl shadow-sm text-center text-xs font-semibold cursor-pointer border transition-all truncate">${sub}</div>`;
+});
+subContainer.innerHTML = html;
+}
+
+function applyFilterAndSort() {
+let filtered = [...allProducts];
+if (selectedCategory) filtered = filtered.filter(p => p.category === selectedCategory);
+if (selectedSubcategory) filtered = filtered.filter(p => p.subcategory === selectedSubcategory);
+if (currentSearchTerm) {
+filtered = filtered.filter(p =>
+p.name.toLowerCase().includes(currentSearchTerm) ||
+(p.description && p.description.toLowerCase().includes(currentSearchTerm)) ||
+(p.searchTags && p.searchTags.toLowerCase().includes(currentSearchTerm))
+);
+}
+if (currentSortOrder === 'low-to-high') {
+filtered.sort((a, b) => parseFloat(a.price.replace(',', '.')) - parseFloat(b.price.replace(',', '.')));
+} else if (currentSortOrder === 'high-to-low') {
+filtered.sort((a, b) => parseFloat(b.price.replace(',', '.')) - parseFloat(a.price.replace(',', '.')));
+}
+updateFilterIndicator();
+renderProducts(filtered);
+}
+
+function renderProducts(products) {
+let html = '';
+products.forEach((p, idx) => {
+const realIndex = allProducts.findIndex(item => item.name === p.name);
+const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
+const loadingType = idx < 4 ? 'eager' : 'lazy';
+
+html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
+<div>
+<div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden">
+<img src="${mainImage}" class="max-w-full max-h-full object-contain" loading="${loadingType}">
+</div>
+<div class="p-3">
+<h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
+<p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description}</p>
+</div>
+</div>
+<div class="p-3 pt-0">
+<p class="text-slate-800 font-black text-base">${p.price} грн <span class="text-[10px] text-amber-600 font-bold block">опт</span></p>
+<button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В замовлення</button>
+</div>
+</div>`;
+});
+document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
+}
+
+function toggleSortMenu() { document.getElementById('sort-menu').classList.toggle('hidden'); }
+function setSortOrder(order) { currentSortOrder = order; document.getElementById('sort-menu').classList.add('hidden'); applyFilterAndSort(); }
+
+function filterByCategory(cat) {
+if (selectedCategory === cat) {
+selectedCategory = null;
+selectedSubcategory = null;
+} else {
+selectedCategory = cat;
+selectedSubcategory = null;
+}
+renderCategories();
+applyFilterAndSort();
+if (selectedCategory) {
+setTimeout(() => {
+const anchorEl = document.getElementById('subcat-anchor');
+if (anchorEl) anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}, 80);
+}
+}
+
+function filterBySubcategory(sub) {
+selectedSubcategory = (selectedSubcategory === sub) ? null : sub;
+renderSubcategories();
+applyFilterAndSort();
+if (selectedSubcategory) {
+setTimeout(() => {
+const anchorEl = document.getElementById('subcat-anchor');
+if (anchorEl) anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}, 50);
+}
+}
+
+function filterProducts() { currentSearchTerm = document.getElementById('search').value.toLowerCase(); applyFilterAndSort(); }
+function resetFilters() { selectedCategory = null; selectedSubcategory = null; document.getElementById('search').value = ''; currentSearchTerm = ""; renderCategories(); applyFilterAndSort(); }
+function goHome() { selectedCategory = null; selectedSubcategory = null; currentSearchTerm = ""; currentSortOrder = "default"; document.getElementById('search').value = ''; renderCategories(); applyFilterAndSort(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+function updateFilterIndicator() {
+const indicator = document.getElementById('filter-indicator');
+const textEl = document.getElementById('filter-indicator-text');
+let parts = [];
+if (selectedCategory) parts.push(`Категорія: <b>${selectedCategory}</b>`);
+if (selectedSubcategory) parts.push(`Підкатегорія: <b>${selectedSubcategory}</b>`);
+if (currentSearchTerm) parts.push(`Пошук: <b>"${currentSearchTerm}"</b>`);
+if (parts.length > 0) { indicator.classList.remove('hidden'); indicator.classList.add('flex'); textEl.innerHTML = parts.join(' | '); }
+else { indicator.classList.add('hidden'); indicator.classList.remove('flex'); }
+}
+
+function addToCartFromList(index) {
+const p = allProducts[index];
+const parsedData = parseOptionsField(p.optionsField);
+let defaultSize = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).sizeName : null;
+let basePrice = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).price : p.price;
+let defaultColor = parsedData.colors.length > 0 ? parsedData.colors[0] : null;
+let defaultScent = parsedData.scents.length > 0 ? parsedData.scents[0] : null;
+
+addToCart(index, 1, defaultSize, defaultColor, defaultScent, basePrice);
+}
+
+function showProductDetails(index) {
+currentProductIndex = index;
+const p = allProducts[index];
+currentModalQty = 1;
+document.getElementById('modal-qty').textContent = currentModalQty;
+
+let validImages = [];
+if (p.images && p.images.length > 0) {
+validImages = p.images.map(url => url.trim()).filter(url => url.startsWith('http'));
+}
+
+currentPhotos = validImages.length > 0 ? validImages : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=60'];
+currentPhotoIndex = 0;
+updateModalPhoto();
+
+let displayCategoryName = p.category;
+if (p.subcategory) displayCategoryName += ` / ${p.subcategory}`;
+document.getElementById('modal-product-category').textContent = displayCategoryName;
+document.getElementById('modal-product-name').textContent = p.name;
+document.getElementById('modal-product-description').textContent = p.description || 'Опис відсутній';
+
+const sizeSelect = document.getElementById('modal-size-select');
+const sizeBlock = document.getElementById('size-selector-block');
+const sizeLabel = document.getElementById('modal-size-label');
+
+const colorSelect = document.getElementById('modal-color-select');
+const colorBlock = document.getElementById('color-selector-block');
+const colorLabel = document.getElementById('modal-color-label');
+
+const scentSelect = document.getElementById('modal-scent-select');
+const scentBlock = document.getElementById('scent-selector-block');
+const scentLabel = document.getElementById('modal-scent-label');
+
+const parsedData = parseOptionsField(p.optionsField);
+
+if (parsedData.sizes.length > 0) {
+sizeBlock.classList.remove('hidden');
+sizeLabel.textContent = parsedData.sizeLabel;
+sizeSelect.innerHTML = parsedData.sizes.map((s, idx) => {
+let parsed = parseSizePrice(s, p.price);
+let isSelected = idx === 0 ? 'selected' : '';
+return `<option value="${parsed.sizeName}" data-price="${parsed.price}" ${isSelected}>${s}</option>`;
+}).join('');
+} else {
+sizeBlock.classList.add('hidden');
+sizeSelect.innerHTML = '';
+}
+
+if (parsedData.colors.length > 0) {
+colorBlock.classList.remove('hidden');
+colorLabel.textContent = parsedData.colorLabel;
+colorSelect.innerHTML = parsedData.colors.map((c, idx) => {
+let isSelected = idx === 0 ? 'selected' : '';
+return `<option value="${c}" data-index="${idx}" ${isSelected}>${c}</option>`;
+}).join('');
+} else {
+colorBlock.classList.add('hidden');
+colorSelect.innerHTML = '';
+}
+
+if (parsedData.scents.length > 0) {
+scentBlock.classList.remove('hidden');
+scentLabel.textContent = parsedData.scentLabel;
+scentSelect.innerHTML = parsedData.scents.map((sc, idx) => {
+let isSelected = idx === 0 ? 'selected' : '';
+return `<option value="${sc}" ${isSelected}>${sc}</option>`;
+}).join('');
+} else {
+scentBlock.classList.add('hidden');
+scentSelect.innerHTML = '';
+}
+
+updateModalPrice();
+setTimeout(() => { syncColorByPhoto(); }, 10);
+
+document.getElementById('modal-product-btn').onclick = function() {
+let chosenSize = (!sizeBlock.classList.contains('hidden')) ? sizeSelect.value : null;
+let chosenColor = (!colorBlock.classList.contains('hidden')) ? colorSelect.value : null;
+let chosenScent = (!scentBlock.classList.contains('hidden')) ? scentSelect.value : null;
+
+if (!sizeBlock.classList.contains('hidden') && !chosenSize) {
+showToast("❌ Будь ласка, оберіть потрібний варіант!", "error");
+return;
+}
+if (!colorBlock.classList.contains('hidden') && !chosenColor) {
+showToast("❌ Будь ласка, оберіть колір товару!", "error");
+return;
+}
+if (!scentBlock.classList.contains('hidden') && !chosenScent) {
+showToast("❌ Будь ласка, оберіть запах товару!", "error");
+return;
+}
+
+let activePrice = p.price;
+if (!sizeBlock.classList.contains('hidden') && sizeSelect.selectedOptions.length > 0) {
+activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
+}
+addToCart(index, currentModalQty, chosenSize, chosenColor, chosenScent, activePrice);
+hideProductModal();
+};
+
+history.pushState({modal: "product"}, null, null);
+document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function updateModalPrice() {
+if (currentProductIndex === null) return;
+const p = allProducts[currentProductIndex];
+const sizeSelect = document.getElementById('modal-size-select');
+const sizeBlock = document.getElementById('size-selector-block');
+
+let activePrice = p.price;
+if (!sizeBlock.classList.contains('hidden') && sizeSelect.value && sizeSelect.selectedOptions.length > 0) {
+activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
+}
+let cleanNum = parseFloat(String(activePrice).replace(/\s/g, '').replace(',', '.'));
+let totalPrice = cleanNum * currentModalQty;
+document.getElementById('modal-product-price').textContent = totalPrice.toFixed(2).replace('.', ',') + ' грн';
+}
+
+function updateModalPhoto() {
+if (currentPhotos.length === 0) return;
+document.getElementById('modal-product-image').src = currentPhotos[currentPhotoIndex];
+const prevBtn = document.getElementById('prev-photo-btn');
+const nextBtn = document.getElementById('next-photo-btn');
+const counter = document.getElementById('photo-counter');
+
+if (currentPhotos.length > 1) {
+prevBtn.classList.remove('hidden'); nextBtn.classList.remove('hidden'); counter.classList.remove('hidden');
+counter.textContent = `${currentPhotoIndex + 1} із ${currentPhotos.length}`;
+} else {
+prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden'); counter.classList.add('hidden');
+}
+}
+
+function syncColorByPhoto() {
+const colorSelect = document.getElementById('modal-color-select');
+const colorBlock = document.getElementById('color-selector-block');
+if (!colorSelect || colorBlock.classList.contains('hidden') || !colorSelect.options.length) return;
+let expectedSelectedIndex = currentPhotoIndex;
+if (expectedSelectedIndex < colorSelect.options.length) colorSelect.selectedIndex = expectedSelectedIndex;
+}
+
+function syncPhotoByColor() {
+const colorSelect = document.getElementById('modal-color-select');
+if (!colorSelect || !colorSelect.options.length) return;
+let selectedIdx = colorSelect.selectedIndex;
+if (selectedIdx >= 0 && selectedIdx < currentPhotos.length) {
+currentPhotoIndex = selectedIdx;
+updateModalPhoto();
+if (!document.getElementById('fullscreen-lightbox').classList.contains('hidden')) updateLightboxImage();
+}
+}
+
+function changePhoto(direction) {
+if (currentPhotos.length <= 1) return;
+currentPhotoIndex += direction;
+if (currentPhotoIndex < 0) currentPhotoIndex = currentPhotos.length - 1;
+if (currentPhotoIndex >= currentPhotos.length) currentPhotoIndex = 0;
+resetZoom();
+updateModalPhoto();
+syncColorByPhoto();
+if (!document.getElementById('fullscreen-lightbox').classList.contains('hidden')) updateLightboxImage();
+}
+
+function changeModalQty(delta) {
+currentModalQty += delta;
+if (currentModalQty < 1) currentModalQty = 1;
+document.getElementById('modal-qty').textContent = currentModalQty;
+updateModalPrice();
+}
+
+function hideProductModal(fromPopState = false) {
+document.getElementById('product-modal').classList.add('hidden');
+currentProductIndex = null;
+if (!fromPopState && window.history.state?.modal === "product") history.back();
+}
+
+function openFullscreenPhoto() {
+if (currentPhotos.length === 0) return;
+const lightbox = document.getElementById('fullscreen-lightbox');
+lightbox.classList.remove('hidden');
+resetZoom();
+updateLightboxImage();
+history.pushState({modal: "lightbox"}, null, null);
+}
+
+function updateLightboxImage() {
+const img = document.getElementById('lightbox-img');
+img.src = currentPhotos[currentPhotoIndex];
+const prevBtn = document.getElementById('lightbox-prev-btn');
+const nextBtn = document.getElementById('lightbox-next-btn');
+if (currentPhotos.length > 1) {
+prevBtn.classList.remove('hidden'); nextBtn.classList.remove('hidden');
+} else {
+prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden');
+}
+}
+
+function closeFullscreenPhoto(fromPopState = false) {
+document.getElementById('fullscreen-lightbox').classList.add('hidden');
+resetZoom();
+if (!fromPopState && window.history.state?.modal === "lightbox") history.back();
+}
+
+function resetZoom() {
+scale = 1; translateX = 0; translateY = 0; updateTransform();
+}
+
+function updateTransform() {
+const img = document.getElementById('lightbox-img');
+if (img) img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+function addToCart(index, qty, size, color, scent, customPrice) {
+const p = allProducts[index];
+let unitPrice = customPrice !== undefined ? customPrice : p.price;
+let cleanNum = parseFloat(String(unitPrice).replace(/\s/g, '').replace(',', '.'));
+
+let cartItem = {
+name: p.name,
+price: cleanNum,
+qty: qty,
+size: size,
+color: color,
+scent: scent,
+image: p.images.length > 0 ? p.images[0] : ''
+};
+
+let existingIndex = cart.findIndex(item => 
+item.name === cartItem.name && 
+item.size === cartItem.size && 
+item.color === cartItem.color && 
+item.scent === cartItem.scent
+);
+
+if (existingIndex > -1) {
+cart[existingIndex].qty += qty;
+} else {
+cart.push(cartItem);
+}
+
+updateCartCounter();
+showToast(`✅ ${p.name} додано в оптовий замовлення!`);
+}
+
+function updateCartCounter() {
+let totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+document.getElementById('cart-count').textContent = totalCount;
+}
+
+function showCart() {
+renderCartItems();
+document.getElementById('cart-modal').classList.remove('hidden');
+history.pushState({modal: "cart"}, null, null);
+}
+
+function hideCart(fromPopState = false) {
+document.getElementById('cart-modal').classList.add('hidden');
+if (!fromPopState && window.history.state?.modal === "cart") history.back();
+}
+
+function renderCartItems() {
+const container = document.getElementById('cart-items');
+if (cart.length === 0) {
+container.innerHTML = `<div class="text-center py-10 text-slate-400 font-medium">Ваш оптовий кошик порожній 🛒</div>`;
+document.getElementById('cart-total').textContent = '0 грн';
+return;
+}
+
+let html = '';
+let totalSum = 0;
+
+cart.forEach((item, index) => {
+let itemTotal = item.price * item.qty;
+totalSum += itemTotal;
+
+let optionsText = [];
+if (item.size) optionsText.push(`Варіант: <b>${item.size}</b>`);
+if (item.color) optionsText.push(`Колір: <b>${item.color}</b>`);
+if (item.scent) optionsText.push(`Запах: <b>${item.scent}</b>`);
+
+html += `<div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100 gap-3">
+<div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 border">
+<img src="${item.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=100&q=60'}" class="max-w-full max-h-full object-contain">
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="text-xs font-bold text-slate-800 truncate">${item.name}</h4>
+${optionsText.length > 0 ? `<p class="text-[11px] text-slate-500 mt-0.5">${optionsText.join(' | ')}</p>` : ''}
+<div class="flex items-center gap-2 mt-2">
+<button onclick="changeCartQty(${index}, -1)" class="w-7 h-7 bg-white rounded-lg border font-bold text-sm shadow-sm">-</button>
+<span class="text-xs font-bold text-slate-800">${item.qty}</span>
+<button onclick="changeCartQty(${index}, 1)" class="w-7 h-7 bg-white rounded-lg border font-bold text-sm shadow-sm">+</button>
+<span class="text-xs font-black text-slate-800 ml-auto">${itemTotal.toFixed(2).replace('.', ',')} грн</span>
+</div>
+</div>
+<button onclick="removeFromCart(${index})" class="text-slate-400 hover:text-red-500 text-lg p-1">✕</button>
+</div>`;
+});
+
+container.innerHTML = html;
+document.getElementById('cart-total').textContent = totalSum.toFixed(2).replace('.', ',') + ' грн';
+}
+
+function changeCartQty(index, delta) {
+cart[index].qty += delta;
+if (cart[index].qty <= 0) cart.splice(index, 1);
+updateCartCounter();
+renderCartItems();
+}
+
+function removeFromCart(index) {
+cart.splice(index, 1);
+updateCartCounter();
+renderCartItems();
+}
+
+function showCheckoutModal() {
+if (cart.length === 0) {
+showToast("❌ Кошик порожній!", "error");
+return;
+}
+hideCart(true);
+document.getElementById('checkout-modal').classList.remove('hidden');
+history.pushState({modal: "checkout"}, null, null);
+}
+
+function hideCheckoutModal(fromPopState = false) {
+document.getElementById('checkout-modal').classList.add('hidden');
+if (!fromPopState && window.history.state?.modal === "checkout") history.back();
+}
+
+function submitOrder() {
+let name = document.getElementById('customer-name').value.trim();
+let phone = document.getElementById('customer-phone').value.trim();
+
+if (!name || !phone) {
+showToast("❌ Будь ласка, введіть ім'я та номер телефону!", "error");
+return;
+}
+
+let orderText = `📦 НОВЕ ОПТОВЕ ЗАМОВЛЕННЯ (ElMarino Opt)!\n\n👤 Клієнт / Компанія: ${name}\n📞 Телефон: ${phone}\n\nТовари:\n`;
+let totalSum = 0;
+
+cart.forEach(item => {
+let itemTotal = item.price * item.qty;
+totalSum += itemTotal;
+let opts = [];
+if (item.size) opts.push(item.size);
+if (item.color) opts.push(item.color);
+if (item.scent) opts.push(item.scent);
+let optsStr = opts.length > 0 ? ` (${opts.join(', ')})` : '';
+orderText += `▪️ ${item.name}${optsStr} x ${item.qty} шт. — ${itemTotal.toFixed(2)} грн\n`;
+});
+
+orderText += `\n💰 Загальна оптова сума: ${totalSum.toFixed(2)} грн`;
+
+let encodedMessage = encodeURIComponent(orderText);
+let telegramUrl = `https://t.me/ElMarino_we?text=${encodedMessage}`;
+
+window.open(telegramUrl, '_blank');
+cart = [];
+updateCartCounter();
+hideCheckoutModal();
+showToast("✅ Оптове замовлення успішно сформовано!");
+}
+
+function initSwipeListeners() {
+const zone = document.getElementById('modal-swipe-zone');
+if (!zone) return;
+
+zone.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+zone.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
+
+const lightbox = document.getElementById('fullscreen-lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+if (!lightbox || !lightboxImg) return;
+
+lightbox.addEventListener('touchstart', e => {
+if (e.touches.length === 2) {
+initialDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+} else if (e.touches.length === 1) {
+startX = e.touches[0].clientX - translateX;
+startY = e.touches[0].clientY - translateY;
+lightboxTouchStartX = e.touches[0].screenX;
+}
+}, {passive: true});
+
+lightbox.addEventListener('touchmove', e => {
+if (e.touches.length === 2) {
+let currentDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+if (initialDistance > 0) {
+let factor = currentDistance / initialDistance;
+scale = Math.min(Math.max(1, scale * (factor > 1 ? 1.05 : 0.95)), 4);
+updateTransform();
+}
+} else if (e.touches.length === 1 && scale > 1) {
+translateX = e.touches[0].clientX - startX;
+translateY = e.touches[0].clientY - startY;
+updateTransform();
+}
+}, {passive: true});
+
+lightbox.addEventListener('touchend', e => {
+if (e.changedTouches.length === 1 && scale === 1) {
+lightboxTouchEndX = e.changedTouches[0].screenX;
+handleLightboxSwipe();
+}
+if (e.touches.length < 2) initialDistance = 0;
+if (scale <= 1) resetZoom();
+}, {passive: true});
+
+lightboxImg.addEventListener('click', e => {
+let currentTime = new Date().getTime();
+let tapLength = currentTime - lastTapTime;
+if (tapLength < 300 && tapLength > 0) {
+if (scale > 1) resetZoom();
+else { scale = 2.5; updateTransform(); }
+e.stopPropagation();
+}
+lastTapTime = currentTime;
+});
+}
+
+function handleSwipe() {
+const threshold = 50;
+if (touchEndX < touchStartX - threshold) changePhoto(1);
+if (touchEndX > touchStartX + threshold) changePhoto(-1);
+}
+
+function handleLightboxSwipe() {
+const threshold = 50;
+if (lightboxTouchEndX < lightboxTouchStartX - threshold) { changePhoto(1); updateLightboxImage(); }
+if (lightboxTouchEndX > lightboxTouchStartX + threshold) { changePhoto(-1); updateLightboxImage(); }
+}
+
+window.onload = function() {
+loadProductsFromSheet();
+};
+</script>
+</body>
+</html>
+
