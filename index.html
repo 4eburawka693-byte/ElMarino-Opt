@@ -222,7 +222,6 @@ onkeyup="filterProducts()">
 </div>
 
 <script>
-// НОВИЙ ID ОПТОВОЇ ТАБЛИЦІ
 const SHEET_ID = '1cOD58OZMbBNhZQeYU3zz90srFwKbAy6w451uOTMhZTA';
 const SPREADSHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
 const REVIEWS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=відгуки`;
@@ -259,6 +258,8 @@ let translateX = 0;
 let translateY = 0;
 let initialDistance = 0;
 let lastTapTime = 0;
+let startX = 0; // <--- Исправлено: добавлено объявление переменной
+let startY = 0; // <--- Исправлено: добавлено объявление переменной
 
 let loadedReviews = [];
 
@@ -305,7 +306,7 @@ return result;
 
 function parseSizePrice(sizeStr, defaultPrice) {
 let sizeName = sizeStr;
-let price = String(defaultPrice).replace(/\s/g, '').replace(',', '.');
+let price = String(defaultPrice || '0').replace(/\s/g, '').replace(',', '.');
 
 if (sizeStr.includes('-')) {
 let parts = sizeStr.split('-');
@@ -325,7 +326,8 @@ price = parseFloat(rawPricePart).toFixed(2);
 }
 }
 }
-return { sizeName, price: parseFloat(price).toFixed(2) };
+let parsedNum = parseFloat(price);
+return { sizeName, price: isNaN(parsedNum) ? '0.00' : parsedNum.toFixed(2) };
 }
 
 const parseCSV = (text) => {
@@ -776,6 +778,7 @@ if (!sizeBlock.classList.contains('hidden') && sizeSelect.value && sizeSelect.se
 activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
 }
 let cleanNum = parseFloat(String(activePrice).replace(/\s/g, '').replace(',', '.'));
+if (isNaN(cleanNum)) cleanNum = 0;
 let totalPrice = cleanNum * currentModalQty;
 document.getElementById('modal-product-price').textContent = totalPrice.toFixed(2).replace('.', ',') + ' грн';
 }
@@ -878,6 +881,7 @@ function addToCart(index, qty, size, color, scent, customPrice) {
 const p = allProducts[index];
 let unitPrice = customPrice !== undefined ? customPrice : p.price;
 let cleanNum = parseFloat(String(unitPrice).replace(/\s/g, '').replace(',', '.'));
+if (isNaN(cleanNum)) cleanNum = 0;
 
 let cartItem = {
 name: p.name,
@@ -903,7 +907,7 @@ cart.push(cartItem);
 }
 
 updateCartCounter();
-showToast(`✅ ${p.name} додано в оптовий замовлення!`);
+showToast(`✅ ${p.name} додано в оптове замовлення!`);
 }
 
 function updateCartCounter() {
