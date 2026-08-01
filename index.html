@@ -519,7 +519,7 @@ if (!fromPopState && window.history.state?.modal === "reviews") history.back();
 async function loadProductsFromSheet() {
 const CACHE_KEY = 'elmarino_opt_products_cache';
 const CACHE_TIME_KEY = 'elmarino_opt_cache_time';
-const CACHE_EXPIRE = 15 * 60 * 1000;
+const CACHE_EXPIRE = 5 * 60 * 1000; // Змінено на 5 хвилин
 
 const cachedData = localStorage.getItem(CACHE_KEY);
 const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
