@@ -61,8 +61,7 @@ object-fit: contain;
 </div>
 
 <div class="flex items-center gap-1.5 shrink-0">
-<!-- Ссылка изменена на вашего бота -->
-<a href="https://t.me/el_marino_shop_bot" target="_blank" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-2.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner">
+<a href="https://t.me/ElMarino_we" target="_blank" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-2.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner">
 💬 <span class="hidden xs:inline">Задати питання</span><span class="xs:hidden">Питання</span>
 </a>
 <button onclick="showCart()" class="flex items-center gap-1.5 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl font-medium transition-colors">
@@ -129,8 +128,7 @@ onkeyup="filterProducts()">
 </div>
 
 <div class="border-t pt-4 mt-2">
-<!-- Ссылка на бота для отзывов -->
-<a href="https://t.me/el_marino_shop_bot" target="_blank" class="block w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d] text-center text-sm">
+<a href="https://t.me/ElMarino_we" target="_blank" class="block w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d] text-center text-sm">
 ✍️ Написати свій відгук у Telegram
 </a>
 </div>
@@ -276,8 +274,9 @@ const SHEET_ID = '1cOD58OZMbBNhZQeYU3zz90srFwKbAy6w451uOTMhZTA';
 const SPREADSHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
 const REVIEWS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=відгуки`;
 
-// ⚠️ ВСТАВЬТЕ СЮДА ССЫЛКУ ИЗ GOOGLE APPS SCRIPT
-const WEB_APP_URL = 'https://script.google.com/macros/s/ВАШ_ID_СКРИПТА/exec';
+// 🤖 Telegram Bot Configuration
+const TELEGRAM_BOT_TOKEN = '8935350713:AAFiU_OAvjEE-xPv33SAnUGTRpMKeXodKjU';
+const TELEGRAM_CHAT_ID = '5263239405';
 
 tailwind.config = {
 theme: {
@@ -1127,55 +1126,52 @@ return;
 }
 
 let totalSumNum = 0;
-let formattedItems = cart.map(item => {
+let messageText = `🛍️ <b>НОВЕ ОПТОВЕ ЗАМОВЛЕННЯ!</b>\n\n`;
+messageText += `👤 <b>Ім'я:</b> ${name}\n`;
+messageText += `📞 <b>Телефон:</b> ${phone}\n\n`;
+messageText += `📦 <b>Товари:</b>\n`;
+
+cart.forEach((item, i) => {
 let cleanPrice = parseFloat(String(item.price).replace(/\s/g, '').replace(',', '.'));
 let itemTotal = cleanPrice * item.qty;
 totalSumNum += itemTotal;
 
-return {
-name: item.name,
-size: item.size || null,
-color: item.color || null,
-scent: item.scent || null,
-qty: item.qty,
-price: item.price,
-total: itemTotal.toFixed(2).replace('.', ',')
-};
+let details = [];
+if (item.size) details.push(`Варіант: ${item.size}`);
+if (item.color) details.push(`Колір: ${item.color}`);
+if (item.scent) details.push(`Запах: ${item.scent}`);
+let detailsStr = details.length > 0 ? ` (${details.join(', ')})` : '';
+
+messageText += `${i+1}. <b>${item.name}</b>${detailsStr}\n   └ ${item.qty} шт. × ${item.price} грн = ${itemTotal.toFixed(2).replace('.', ',')} грн\n`;
 });
 
 let totalSumStr = totalSumNum.toFixed(2).replace('.', ',');
+messageText += `\n💰 <b>Загальна сума:</b> ${totalSumStr} грн`;
 
-const payloadData = {
-name: name,
-phone: phone,
-items: formattedItems,
-totalSum: totalSumStr
-};
-
-// 1. Отправляем данные на Google Apps Script
+// Прямая мгновенная отправка в Telegram через API
 try {
-if (WEB_APP_URL && !WEB_APP_URL.includes('ВАШ_ID_СКРИПТА')) {
-fetch(WEB_APP_URL, {
+let response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
 method: 'POST',
-mode: 'no-cors',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payloadData)
+body: JSON.stringify({
+chat_id: TELEGRAM_CHAT_ID,
+text: messageText,
+parse_mode: 'HTML'
+})
 });
-}
-} catch (e) {
-console.error("Помилка при відправці в скрипт:", e);
-}
 
-// 2. Формируем короткий текст для перехода в @el_marino_shop_bot
-let startText = `Заказ_${name}_${phone}`.replace(/\s+/g, '_');
-let telegramUrl = `https://t.me/el_marino_shop_bot?start=${encodeURIComponent(startText)}`;
-
-window.open(telegramUrl, '_blank');
-
+if (response.ok) {
 cart = [];
 updateCartCounter();
 hideCheckoutModal();
-showToast("🚀 Замовлення успішно сформовано!");
+showToast("🚀 Замовлення успішно відправлено!");
+} else {
+showToast("❌ Помилка при відправці замовлення", "error");
+}
+} catch (e) {
+console.error("Помилка відправки в Telegram:", e);
+showToast("❌ Мережева помилка. Спробуйте ще раз", "error");
+}
 }
 
 function initSwipeListeners() {
