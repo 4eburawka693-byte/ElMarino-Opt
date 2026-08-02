@@ -44,7 +44,7 @@ body { font-family: system-ui, sans-serif; }
 <body class="bg-[#f4f5f7] notranslate">
 
 <div class="max-w-4xl mx-auto pb-20">
-    <!-- Головний банер завантажується першочергово -->
+    <!-- Головний банер -->
     <div class="w-full overflow-hidden shadow-sm">
         <img src="https://i.postimg.cc/KvynpRrT/1782584017691.jpg" alt="ElMarino Banner" class="w-full h-auto object-cover block" loading="eager" fetchpriority="high">
     </div>
@@ -219,6 +219,7 @@ body { font-family: system-ui, sans-serif; }
     <button id="lightbox-next-btn" onclick="changePhoto(1); updateLightboxImage(); event.stopPropagation();" class="fixed right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＞</button>
 </div>
 
+<!-- КОШИК -->
 <div id="cart-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end z-50" onclick="hideCart()">
     <div class="bg-white w-full rounded-t-3xl max-h-[85vh] overflow-auto p-5 flex flex-col" onclick="event.stopPropagation()">
         <div class="flex justify-between mb-4 items-center">
@@ -238,6 +239,7 @@ body { font-family: system-ui, sans-serif; }
     </div>
 </div>
 
+<!-- ОФОРМЛЕННЯ ЗАМОВЛЕННЯ -->
 <div id="checkout-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-[55]" onclick="hideCheckoutModal()">
     <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
         <button onclick="hideCheckoutModal()" class="absolute top-4 right-4 text-slate-400 text-2xl p-1">✕</button>
@@ -310,7 +312,6 @@ function triggerNativeInstall() {
     if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         deferredInstallPrompt.userChoice.then((choiceResult) => {
-            console.log('User accepted the install prompt');
             deferredInstallPrompt = null;
             document.getElementById('native-install-btn').classList.add('hidden');
         });
@@ -401,6 +402,7 @@ const parseCSV = (text) => {
     return r;
 };
 
+// ОБРАБОТЧИК КНОПКИ «НАЗАД» В БРАУЗЕРЕ
 window.addEventListener('popstate', function () {
     const modalOpen = !document.getElementById('product-modal').classList.contains('hidden');
     const cartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
@@ -409,7 +411,7 @@ window.addEventListener('popstate', function () {
     const installOpen = !document.getElementById('install-modal').classList.contains('hidden');
     const reviewsOpen = !document.getElementById('reviews-modal').classList.contains('hidden');
 
-    if (lightboxOpen) { closeFullscreenPhoto(); history.pushState(null, null, window.location.pathname); } 
+    if (lightboxOpen) { closeFullscreenPhoto(); } 
     else if (checkoutOpen) { hideCheckoutModal(true); } 
     else if (modalOpen) { hideProductModal(true); } 
     else if (cartOpen) { hideCart(true); } 
@@ -458,7 +460,6 @@ async function loadReviewsFromSheet() {
         }
         renderReviews();
     } catch (err) {
-        console.error("Помилка завантаження відгуків:", err);
         document.getElementById('reviews-list').innerHTML = `<div class="text-center py-6 text-red-400">Не вдалося завантажити відгуки. Спробуйте пізніше.</div>`;
     }
 }
@@ -556,7 +557,6 @@ async function loadProductsFromSheet() {
         applyFilterAndSort();
         initSwipeListeners();
     } catch (error) {
-        console.error(error);
         if (cachedData) {
             allProducts = JSON.parse(cachedData);
             renderCategories();
@@ -639,14 +639,11 @@ function applyFilterAndSort() {
     renderProducts(filtered);
 }
 
-// ОПТИМІЗОВАНА ФУНКЦІЯ РЕНДЕРИНГУ ТОВАРІВ
 function renderProducts(products) {
     let html = '';
     products.forEach((p, idx) => {
         const realIndex = allProducts.findIndex(item => item.name === p.name);
         const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
-
-        // Перші 4 товари завантажуються миттєво (eager), всі інші — поступово (lazy)
         const isVisibleFirst = idx < 4;
         const loadingAttr = isVisibleFirst ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
 
@@ -747,7 +744,6 @@ function showProductDetails(index) {
     currentPhotoIndex = 0;
     updateModalPhoto();
 
-    // Фонове підвантаження решти фотографій товару при відкритті
     if (currentPhotos.length > 1) {
         setTimeout(() => {
             for (let i = 1; i < currentPhotos.length; i++) {
@@ -881,7 +877,6 @@ function updateModalPhoto() {
     }
 }
 
-// ВОССТАНОВЛЕННАЯ ЧАСТЬ КОДА (начиная с места обрыва):
 function syncColorByPhoto() {
     const colorSelect = document.getElementById('modal-color-select');
     const colorBlock = document.getElementById('color-selector-block');
@@ -961,9 +956,12 @@ function showCart() {
     history.pushState({modal: "cart"}, null, null);
 }
 
-function hideCart(fromPopState = false) {
+// ИСПРАВЛЕННОЕ ЗАКРЫТИЕ КОШЕЛЕК
+function hideCart(fromPopState = false, keepHistory = false) {
     document.getElementById('cart-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "cart") history.back();
+    if (!fromPopState && !keepHistory && window.history.state?.modal === "cart") {
+        history.back();
+    }
 }
 
 function renderCartItems() {
@@ -1013,21 +1011,25 @@ function changeCartQty(idx, delta) {
     renderCartItems();
 }
 
+// ИСПРАВЛЕННЫЙ ПЕРЕХОД В ОФОРМЛЕНИЕ
 function showCheckoutModal() {
     if (cart.length === 0) {
         showToast("Кошик порожній!", "error");
         return;
     }
-    hideCart();
+    hideCart(false, true); 
     document.getElementById('checkout-modal').classList.remove('hidden');
-    history.pushState({modal: "checkout"}, null, null);
+    history.replaceState({modal: "checkout"}, null, null);
 }
 
 function hideCheckoutModal(fromPopState = false) {
     document.getElementById('checkout-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "checkout") history.back();
+    if (!fromPopState && window.history.state?.modal === "checkout") {
+        history.back();
+    }
 }
 
+// ИСПРАВЛЕННАЯ ОТПРАВКА ЗАКАЗА
 function submitOrder() {
     const name = document.getElementById('customer-name').value.trim();
     const phone = document.getElementById('customer-phone').value.trim();
@@ -1063,7 +1065,12 @@ function submitOrder() {
 
     cart = [];
     updateCartCount();
-    hideCheckoutModal();
+    
+    document.getElementById('checkout-modal').classList.add('hidden');
+    if (window.history.state?.modal === "checkout") {
+        history.back();
+    }
+    
     window.location.href = telegramUrl;
 }
 
