@@ -24,7 +24,7 @@
             background-color: var(--bg-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: var(--text-main);
-            padding-bottom: 30px;
+            padding-bottom: 40px;
         }
 
         /* Шапка сайту */
@@ -37,7 +37,7 @@
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 100;
         }
 
         .header-btn {
@@ -68,14 +68,14 @@
             cursor: pointer;
         }
 
-        /* Контейнер вмісту */
+        /* Головний контейнер */
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 12px;
         }
 
-        /* Категорії (кнопки-теги) */
+        /* Категорії */
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -93,9 +93,15 @@
             font-weight: 600;
             border: 1px solid var(--border-color);
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Блок підкатегорій */
+        .category-item.active {
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        /* Підкатегорії */
         .subcategories-box {
             background-color: #f5ebe0;
             border-radius: 16px;
@@ -116,9 +122,15 @@
             flex: 1;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
         }
 
-        /* Сітка карток товарів */
+        .sub-tag.active {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* Сітка товарів */
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -137,7 +149,7 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Контейнер для зображення та стікера */
+        /* Контейнер картинки */
         .image-container {
             position: relative;
             width: 100%;
@@ -154,9 +166,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        /* Помітний стікер оптової ціни */
+        /* Наклейка ОПТ */
         .badge-opt {
             position: absolute;
             top: 8px;
@@ -168,12 +181,12 @@
             letter-spacing: 0.5px;
             padding: 4px 6px;
             border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 3;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 5;
             text-transform: uppercase;
         }
 
-        /* Текстові дані товару */
+        /* Інформація про товар */
         .product-title {
             font-size: 13px;
             font-weight: 600;
@@ -193,7 +206,7 @@
         }
 
         .wholesale-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--accent-yellow);
             font-weight: 700;
             text-transform: uppercase;
@@ -206,7 +219,7 @@
             color: var(--text-main);
         }
 
-        /* Кнопка кошика */
+        /* Кнопка додавання у кошик */
         .btn-cart {
             background-color: var(--card-bg);
             border: 1px solid var(--accent-yellow);
@@ -228,79 +241,165 @@
 </head>
 <body>
 
-    <!-- Верхня панель -->
+    <!-- Шапка -->
     <header class="header">
-        <button class="header-btn">🏠 Головна</button>
+        <button class="header-btn" onclick="filterCategory('all')">🏠 Головна</button>
         <button class="header-btn">⭐ Відгуки</button>
         <button class="header-btn">💬 Задати питання</button>
-        <button class="cart-badge-btn">🛒 0</button>
+        <button class="cart-badge-btn">🛒 <span id="cart-count">0</span></button>
     </header>
 
     <div class="container">
         
-        <!-- Сітка основних категорій -->
-        <div class="categories-grid">
-            <div class="category-item">все для дому</div>
-            <div class="category-item">сумки</div>
-            <div class="category-item">все для кухні</div>
-            <div class="category-item">все для свята</div>
-            <div class="category-item">взуття</div>
-            <div class="category-item">ємності для зберігання</div>
-            <div class="category-item">побутова хімія</div>
-            <div class="category-item">Засоби захисту від комах та гризунів</div>
+        <!-- Категорії -->
+        <div class="categories-grid" id="categories-container">
+            <div class="category-item" onclick="filterCategory('все для дому', this)">все для дому</div>
+            <div class="category-item" onclick="filterCategory('сумки', this)">сумки</div>
+            <div class="category-item" onclick="filterCategory('все для кухні', this)">все для кухні</div>
+            <div class="category-item" onclick="filterCategory('все для свята', this)">все для свята</div>
+            <div class="category-item" onclick="filterCategory('взуття', this)">взуття</div>
+            <div class="category-item" onclick="filterCategory('ємності для зберігання', this)">ємності для зберігання</div>
+            <div class="category-item" onclick="filterCategory('побутова хімія', this)">побутова хімія</div>
+            <div class="category-item" onclick="filterCategory('Засоби захисту', this)">Засоби захисту від комах та гризунів</div>
         </div>
 
         <!-- Підкатегорії -->
         <div class="subcategories-box">
-            <div class="sub-tag">фасувальні</div>
-            <div class="sub-tag">майка</div>
-            <div class="sub-tag" style="flex-basis: 100%;">різні + подарункові</div>
+            <div class="sub-tag" onclick="filterSubCategory('фасувальні', this)">фасувальні</div>
+            <div class="sub-tag" onclick="filterSubCategory('майка', this)">майка</div>
+            <div class="sub-tag" style="flex-basis: 100%;" onclick="filterSubCategory('різні+подарункові', this)">різні + подарункові</div>
         </div>
 
-        <!-- Сітка товарів з оптовими цінами -->
-        <div class="catalog-grid">
-            
-            <!-- Товар 1 -->
-            <div class="product-card">
-                <div>
-                    <div class="image-container">
-                        <span class="badge-opt">Опт ціна</span>
-                        <img src="photo1.jpg" alt="Пакет фасувальний 10×22 ЕКО">
-                    </div>
-                    <div class="product-title">Пакет фасувальний 10×22 ЕКО</div>
-                    <div class="product-subtitle">1000 шт. в упаковці</div>
-                </div>
-                <div>
-                    <div class="product-price-block">
-                        <div class="wholesale-label">Оптова ціна</div>
-                        <div class="product-price">95,00 грн</div>
-                    </div>
-                    <div class="btn-cart">В кошик</div>
-                </div>
-            </div>
-
-            <!-- Товар 2 -->
-            <div class="product-card">
-                <div>
-                    <div class="image-container">
-                        <span class="badge-opt">Опт ціна</span>
-                        <img src="photo2.jpg" alt="Пакет фасувальний 10×22 NewEko">
-                    </div>
-                    <div class="product-title">Пакет фасувальний 10×22 NewEko</div>
-                    <div class="product-subtitle">1000 шт. в упаковці</div>
-                </div>
-                <div>
-                    <div class="product-price-block">
-                        <div class="wholesale-label">Оптова ціна</div>
-                        <div class="product-price">80,00 грн</div>
-                    </div>
-                    <div class="btn-cart">В кошик</div>
-                </div>
-            </div>
-
+        <!-- Динамічна сітка товарів -->
+        <div class="catalog-grid" id="catalog-grid">
+            <!-- Товари завантажуються через JavaScript -->
         </div>
+
     </div>
 
+    <script>
+        // Повний масив товарів оптового каталогу
+        // (Якщо ви підключаєте Google Таблицю, сюди завантажуватимуться дані з таблиці)
+        const productsData = [
+            {
+                id: 1,
+                title: "Пакет фасувальний 10×22 ЕКО",
+                subtitle: "1000 шт. в упаковці",
+                price: "95,00 грн",
+                category: "фасувальні",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=10x22+EKO" 
+            },
+            {
+                id: 2,
+                title: "Пакет фасувальний 10×22 NewEko",
+                subtitle: "1000 шт. в упаковці",
+                price: "80,00 грн",
+                category: "фасувальні",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=10x22+NewEko"
+            },
+            {
+                id: 3,
+                title: "Пакет майка 30×50 БМП",
+                subtitle: "250 шт. в упаковці",
+                price: "115,00 грн",
+                category: "майка",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=Майка+30x50"
+            },
+            {
+                id: 4,
+                title: "Пакет майка 24×42 Волошка",
+                subtitle: "200 шт. в упаковці",
+                price: "65,00 грн",
+                category: "майка",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=Майка+Волошка"
+            },
+            {
+                id: 5,
+                title: "Пакет подарунковий 18×25",
+                subtitle: "50 шт. в упаковці",
+                price: "140,00 грн",
+                category: "різні+подарункові",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=Подарунковий"
+            },
+            {
+                id: 6,
+                title: "Пакет фасувальний 18×35 ЕКО",
+                subtitle: "1000 шт. в упаковці",
+                price: "160,00 грн",
+                category: "фасувальні",
+                image: "https://via.placeholder.com/300/2a2a2a/ffffff?text=18x35+EKO"
+            }
+        ];
+
+        let cartCount = 0;
+
+        // Функція відображення карток товарів у каталозі
+        function renderProducts(items) {
+            const container = document.getElementById('catalog-grid');
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 20px; color: #888;">Товарів у цій категорії не знайдено</div>';
+                return;
+            }
+
+            items.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="image-container">
+                            <span class="badge-opt">ОПТ ЦІНА</span>
+                            <img src="${product.image}" alt="${product.title}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300/2a2a2a/ffffff?text=Немає+фото';">
+                        </div>
+                        <div class="product-title">${product.title}</div>
+                        <div class="product-subtitle">${product.subtitle}</div>
+                    </div>
+                    <div>
+                        <div class="product-price-block">
+                            <div class="wholesale-label">Оптова ціна</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <button class="btn-cart" onclick="addToCart()">В кошик</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Функція підрахунку кошика
+        function addToCart() {
+            cartCount++;
+            document.getElementById('cart-count').innerText = cartCount;
+        }
+
+        // Фільтрація за підкатегоріями
+        function filterSubCategory(catName, el) {
+            document.querySelectorAll('.sub-tag').forEach(tag => tag.classList.remove('active'));
+            if(el) el.classList.add('active');
+            
+            const filtered = productsData.filter(p => p.category === catName);
+            renderProducts(filtered);
+        }
+
+        // Фільтрація зальними категоріями
+        function filterCategory(catName, el) {
+            document.querySelectorAll('.category-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.sub-tag').forEach(tag => tag.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            if (catName === 'all') {
+                renderProducts(productsData);
+            } else {
+                renderProducts(productsData); // Показує всі товари або відфільтровані
+            }
+        }
+
+        // Початкова ініціалізація завантаження всіх товарів
+        window.onload = function() {
+            renderProducts(productsData);
+        };
+    </script>
 </body>
 </html>
 
