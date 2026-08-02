@@ -126,8 +126,8 @@
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-full shadow-lg z-50 hidden transition-all duration-300"></div>
 
     <script>
-        // Ссылка на таблицу Google Sheets (CSV/TSV)
-        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1L9L91T23f9i_P34M-3M2-G8V8264N_M2-G8V/pub?output=tsv';
+        // Универсальный парсер CSV/TSV
+        const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1L9L91T23f9i_P34M-3M2-G8V8264N_M2-G8V/pub?output=csv';
 
         let allProducts = [];
         let activeCategory = 'all';
@@ -135,7 +135,6 @@
         let selectedOptions = { size: null, color: null, scent: null };
         let cart = [];
 
-        // Загрузка данных
         async function fetchProducts() {
             try {
                 const response = await fetch(SPREADSHEET_URL);
@@ -143,24 +142,45 @@
                 parseData(data);
             } catch (e) {
                 console.error("Ошибка загрузки данных", e);
+                document.getElementById('products').innerHTML = '<p class="col-span-2 text-center py-10 text-red-500">Помилка завантаження товарів</p>';
             }
         }
 
-        function parseData(tsvText) {
-            const lines = tsvText.split('\n').map(l => l.trim()).filter(l => l);
+        // Вспомогательная функция разбора CSV
+        function parseCSVLine(text) {
+            let result = [];
+            let cell = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (c === '"') {
+                    inQuotes = !inQuotes;
+                } else if ((c === ',' || c === '\t') && !inQuotes) {
+                    result.push(cell.trim());
+                    cell = '';
+                } else {
+                    cell += c;
+                }
+            }
+            result.push(cell.trim());
+            return result;
+        }
+
+        function parseData(text) {
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
             if (lines.length <= 1) return;
 
-            const headers = lines[0].split('\t').map(h => h.toLowerCase().trim());
+            const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/^"|"$/g, '').trim());
             allProducts = [];
             const categoriesSet = new Set();
 
             for (let i = 1; i < lines.length; i++) {
-                const row = lines[i].split('\t');
+                const row = parseCSVLine(lines[i]).map(val => val.replace(/^"|"$/g, '').trim());
                 if (row.length < 2) continue;
 
                 let p = {};
                 headers.forEach((h, idx) => {
-                    p[h] = row[idx] ? row[idx].trim() : '';
+                    p[h] = row[idx] ? row[idx] : '';
                 });
 
                 if (!p.name) continue;
@@ -221,14 +241,12 @@
             renderProducts(filtered);
         }
 
-        // Оптимизированный рендер товаров с ленивой загрузкой
         function renderProducts(products) {
             let html = '';
             products.forEach((p, idx) => {
                 const realIndex = allProducts.findIndex(item => item.name === p.name);
                 const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
 
-                // Первые 4 карточки качаем сразу, остальные — по мере прокрутки
                 const loadingAttr = idx < 4 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
 
                 html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
@@ -251,7 +269,6 @@
             document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
         }
 
-        // Подробная карточка
         function showProductDetails(index) {
             currentModalProduct = allProducts[index];
             selectedOptions = { size: null, color: null, scent: null };
@@ -275,7 +292,6 @@
                 });
             }
 
-            // Опции
             const optionsContainer = document.getElementById('modal-options');
             optionsContainer.innerHTML = '';
 
@@ -318,7 +334,6 @@
 
         function hideProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
 
-        // Работа с корзиной
         function addToCartFromList(index) {
             const product = allProducts[index];
             addToCart(product, {
@@ -434,7 +449,6 @@
 
         function hideCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
-        // Функция отправки заказа напрямую в Telegram-бота
         function submitOrder() {
             const name = document.getElementById('customer-name').value.trim();
             const phone = document.getElementById('customer-phone').value.trim();
@@ -467,14 +481,12 @@
             let totalSumStr = totalSumNum.toFixed(2).replace('.', ',');
             messageText += `\n💰 Загальна сума: ${totalSumStr} грн`;
 
-            // Ссылка на бота ElMarinooptbot
             const telegramUrl = `https://t.me/ElMarinooptbot?text=${encodeURIComponent(messageText)}`;
 
             cart = [];
             updateCartCounter();
             hideCheckoutModal();
 
-            // Перенаправляем прямо в приложение Telegram
             window.location.href = telegramUrl;
         }
 
@@ -485,7 +497,6 @@
             setTimeout(() => toast.classList.add('hidden'), 2500);
         }
 
-        // Старт
         fetchProducts();
     </script>
 </body>
