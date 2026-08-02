@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ElMarino Опт</title>
 
-<!-- Швидше з'єднання з серверами та фотохостингами -->
+<!-- Оптимізація з'єднань -->
 <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
 <link rel="dns-prefetch" href="https://unpkg.com">
 <link rel="dns-prefetch" href="https://docs.google.com">
@@ -44,6 +44,7 @@ object-fit: contain;
 <body class="bg-[#f4f5f7] notranslate">
 
 <div class="max-w-4xl mx-auto pb-20">
+<!-- Головний банер завантажується першочергово -->
 <div class="w-full overflow-hidden shadow-sm">
 <img src="https://i.postimg.cc/KvynpRrT/1782584017691.jpg" alt="ElMarino Banner" class="w-full h-auto object-cover block" loading="eager" fetchpriority="high">
 </div>
@@ -171,7 +172,7 @@ onkeyup="filterProducts()">
 
 <div class="overflow-y-auto flex-1 pb-28">
 <div id="modal-swipe-zone" class="w-full h-80 sm:h-96 bg-slate-50 flex items-center justify-center overflow-hidden relative cursor-zoom-in">
-<img id="modal-product-image" src="" class="max-w-full max-h-full object-contain" loading="eager" onclick="openFullscreenPhoto()">
+<img id="modal-product-image" src="" class="max-w-full max-h-full object-contain" loading="eager" fetchpriority="high" onclick="openFullscreenPhoto()">
 <button id="prev-photo-btn" onclick="changePhoto(-1); event.stopPropagation();" class="absolute left-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＜</button>
 <button id="next-photo-btn" onclick="changePhoto(1); event.stopPropagation();" class="absolute right-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＞</button>
 <span id="photo-counter" class="absolute bottom-3 right-3 bg-[#242426]/60 text-white text-xs px-2.5 py-1 rounded-full font-medium"></span>
@@ -665,14 +666,33 @@ updateFilterIndicator();
 renderProducts(filtered);
 }
 
+// ОПТИМІЗОВАНА ФУНКЦІЯ РЕНДЕРИНГУ ТОВАРІВ
 function renderProducts(products) {
 let html = '';
 products.forEach((p, idx) => {
 const realIndex = allProducts.findIndex(item => item.name === p.name);
 const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
-const loadingType = idx < 4 ? 'eager' : 'lazy';
 
-html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between"><div><div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden"><img src="${mainImage}" class="max-w-full max-h-full object-contain" loading="${loadingType}"></div><div class="p-3"><h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3><p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description}</p></div></div><div class="p-3 pt-0"><span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 inline-block mb-1">Оптова ціна</span><p class="text-slate-800 font-black text-base">${p.price} грн</p><button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button></div></div>`;
+// Перші 4 товари завантажуються миттєво (eager), всі інші — поступово (lazy)
+const isVisibleFirst = idx < 4;
+const loadingAttr = isVisibleFirst ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+
+html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
+<div>
+<div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden">
+<img src="${mainImage}" class="max-w-full max-h-full object-contain" ${loadingAttr}>
+</div>
+<div class="p-3">
+<h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
+<p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description}</p>
+</div>
+</div>
+<div class="p-3 pt-0">
+<span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 inline-block mb-1">Оптова ціна</span>
+<p class="text-slate-800 font-black text-base">${p.price} грн</p>
+<button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button>
+</div>
+</div>`;
 });
 document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
 }
@@ -756,6 +776,16 @@ validImages = p.images.map(url => url.trim()).filter(url => url.startsWith('http
 currentPhotos = validImages.length > 0 ? validImages : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=60'];
 currentPhotoIndex = 0;
 updateModalPhoto();
+
+// Фонове підвантаження решти фотографій товару при відкритті
+if (currentPhotos.length > 1) {
+setTimeout(() => {
+for (let i = 1; i < currentPhotos.length; i++) {
+const img = new Image();
+img.src = currentPhotos[i];
+}
+}, 100);
+}
 
 let displayCategoryName = p.category;
 if (p.subcategory) displayCategoryName += ` / ${p.subcategory}`;
@@ -1048,7 +1078,7 @@ if (item.color) detailsText.push(`Колір: ${item.color}`);
 if (item.scent) detailsText.push(`Запах: ${item.scent}`);
 let detailsString = detailsText.length > 0 ? `<div class="text-xs text-slate-500 mt-0.5">${detailsText.join(' | ')}</div>` : '';
 
-html += `<div class="flex items-center justify-between bg-slate-50 p-3.5 rounded-2xl border border-slate-100 shadow-sm gap-3"><div class="flex items-center gap-3 min-w-0"><img src="${item.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=100&q=60'}" class="w-14 h-14 object-contain bg-white rounded-xl border p-1 shrink-0"><div class="min-w-0"><h4 class="text-sm font-bold text-slate-800 truncate">${item.name}</h4>${detailsString}<div class="text-xs font-black text-slate-700 mt-1">${item.price} грн × ${item.qty} = ${itemTotal.toFixed(2).replace('.', ',')} грн</div></div></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-8 h-8 bg-white rounded-xl border font-bold text-base active:bg-slate-100 shadow-sm flex items-center justify-center">-</button><span class="w-6 text-center font-bold text-sm text-slate-800">${item.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-8 h-8 bg-white rounded-xl border font-bold text-base active:bg-slate-100 shadow-sm flex items-center justify-center">+</button><button onclick="removeFromCart(${idx})" class="ml-2 text-slate-400 hover:text-red-500 text-lg p-1">🗑️</button></div></div>`;
+html += `<div class="flex items-center justify-between bg-slate-50 p-3.5 rounded-2xl border border-slate-100 shadow-sm gap-3"><div class="flex items-center gap-3 min-w-0"><img src="${item.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=100&q=60'}" class="w-14 h-14 object-contain bg-white rounded-xl border p-1 shrink-0" loading="lazy"><div class="min-w-0"><h4 class="text-sm font-bold text-slate-800 truncate">${item.name}</h4>${detailsString}<div class="text-xs font-black text-slate-700 mt-1">${item.price} грн × ${item.qty} = ${itemTotal.toFixed(2).replace('.', ',')} грн</div></div></div><div class="flex items-center gap-1.5 shrink-0"><button onclick="changeCartQty(${idx}, -1)" class="w-8 h-8 bg-white rounded-xl border font-bold text-base active:bg-slate-100 shadow-sm flex items-center justify-center">-</button><span class="w-6 text-center font-bold text-sm text-slate-800">${item.qty}</span><button onclick="changeCartQty(${idx}, 1)" class="w-8 h-8 bg-white rounded-xl border font-bold text-base active:bg-slate-100 shadow-sm flex items-center justify-center">+</button><button onclick="removeFromCart(${idx})" class="ml-2 text-slate-400 hover:text-red-500 text-lg p-1">🗑️</button></div></div>`;
 });
 
 container.innerHTML = html;
