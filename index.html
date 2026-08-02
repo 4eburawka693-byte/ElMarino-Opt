@@ -3,29 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElMarino - Каталог товарів</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>ElMarino — Каталог товарів</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #1e88e5;
+            --primary-dark: #1565c0;
+            --accent: #2e7d32;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --radius: 14px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #333;
+            background-color: var(--bg);
+            color: var(--text);
             padding-bottom: 90px;
         }
 
-        /* Header */
         header {
             background: linear-gradient(135deg, #0d47a1, #1976d2);
             color: white;
-            padding: 16px;
+            padding: 18px 16px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -34,38 +45,69 @@
         header h1 {
             font-size: 22px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         header p {
-            font-size: 12px;
-            opacity: 0.85;
-            margin-top: 2px;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
         }
 
-        /* Container */
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 12px;
+            padding: 14px;
         }
 
-        /* Categories / Search */
         .search-box {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 15px;
+            padding: 12px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 30px;
+            font-size: 14px;
             outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
 
-        /* Products Grid */
+        .categories {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -73,46 +115,49 @@
         }
 
         .product-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s;
+            border: 1px solid #f0f0f0;
+            position: relative;
         }
 
-        .product-card:active {
-            transform: scale(0.98);
+        .product-img-wrapper {
+            width: 100%;
+            height: 140px;
+            background-color: #f3f4f6;
+            overflow: hidden;
         }
 
         .product-img {
             width: 100%;
-            height: 140px;
+            height: 100%;
             object-fit: cover;
-            background-color: #eee;
         }
 
         .product-info {
             padding: 10px;
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
         }
 
         .product-title {
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
             line-height: 1.3;
-            margin-bottom: 6px;
-            color: #222;
+            margin-bottom: 4px;
+            color: #111827;
         }
 
         .product-desc {
             font-size: 11px;
-            color: #666;
-            margin-bottom: 8px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -129,38 +174,30 @@
         .product-price {
             font-size: 15px;
             font-weight: 700;
-            color: #2e7d32;
+            color: var(--accent);
         }
 
         .btn-add {
-            background-color: #1976d2;
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 8px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .btn-add:hover {
-            background-color: #1565c0;
-        }
-
-        /* Floating Cart Bar */
         .cart-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border-top: 1px solid #eee;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
             padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
             z-index: 1000;
         }
 
@@ -169,43 +206,32 @@
             flex-direction: column;
         }
 
-        .cart-count {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .cart-total {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0d47a1;
-        }
+        .cart-count { font-size: 12px; color: var(--text-muted); }
+        .cart-total { font-size: 18px; font-weight: 700; color: #0d47a1; }
 
         .btn-cart {
-            background: linear-gradient(135deg, #2e7d32, #43a047);
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 22px;
             border-radius: 25px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 3px 8px rgba(46,125,50,0.3);
         }
 
-        /* Modal / Checkout Screen */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
             z-index: 2000;
             align-items: flex-end;
             justify-content: center;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: white;
@@ -215,12 +241,6 @@
             max-height: 85vh;
             overflow-y: auto;
             padding: 20px;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
         }
 
         .modal-header {
@@ -228,20 +248,17 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             margin-bottom: 15px;
         }
 
-        .modal-header h2 {
-            font-size: 18px;
-            color: #111;
-        }
-
         .close-btn {
-            background: none;
+            background: #f3f4f6;
             border: none;
-            font-size: 24px;
-            color: #888;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            color: #666;
             cursor: pointer;
         }
 
@@ -253,49 +270,25 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .cart-item-title {
-            font-size: 13px;
-            font-weight: 500;
-            flex-grow: 1;
-            padding-right: 10px;
-        }
-
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .cart-item-title { font-size: 13px; font-weight: 500; flex-grow: 1; }
+        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
 
         .btn-qty {
-            background: #eee;
+            background: #e5e7eb;
             border: none;
-            width: 26px;
-            height: 26px;
+            width: 28px; height: 28px;
             border-radius: 50%;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
         }
 
-        .form-group {
-            margin-top: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 5px;
-            color: #444;
-        }
-
+        .form-group { margin-top: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
         .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
+            width: 100%; padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px; font-size: 14px;
         }
 
         .btn-submit {
@@ -305,19 +298,14 @@
             border: none;
             padding: 14px;
             border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 700;
             margin-top: 20px;
             cursor: pointer;
         }
 
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 15px;
-            font-size: 14px;
-            color: #666;
-        }
+        .loader { display: none; text-align: center; padding: 15px; color: #666; }
+        .empty-msg { text-align: center; padding: 40px; color: #888; grid-column: 1/-1; }
     </style>
 </head>
 <body>
@@ -332,13 +320,16 @@
             <input type="text" id="searchInput" placeholder="🔍 Пошук товарів..." onkeyup="filterProducts()">
         </div>
 
+        <div class="categories" id="categoryContainer">
+            <button class="cat-btn active" onclick="setCategory('all', this)">Всі товари</button>
+        </div>
+
         <div class="products-grid" id="productsGrid">
-            <!-- Товари завантажуються тут -->
+            <div class="empty-msg">Завантаження товарів з таблиці... ⏳</div>
         </div>
     </div>
 
-    <!-- Плаваюча кошик-панель -->
-    <div class="cart-bar" id="cartBar">
+    <div class="cart-bar">
         <div class="cart-info">
             <span class="cart-count" id="cartCountText">Товарів: 0</span>
             <span class="cart-total" id="cartTotalText">0 грн</span>
@@ -346,7 +337,6 @@
         <button class="btn-cart" onclick="openModal()">Оформити</button>
     </div>
 
-    <!-- Модальне вікно кошика та оформлення -->
     <div class="modal" id="cartModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -354,9 +344,7 @@
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
 
-            <div id="cartItemsList">
-                <!-- Список товарів кошика -->
-            </div>
+            <div id="cartItemsList"></div>
 
             <form id="checkoutForm" onsubmit="submitOrder(event)">
                 <div class="form-group">
@@ -368,75 +356,81 @@
                     <input type="tel" id="userPhone" placeholder="+380XXXXXXXXX" required>
                 </div>
 
-                <div class="loader" id="loader">Надсилання замовлення... Зачекайте ⏳</div>
+                <div class="loader" id="loader">Надсилання замовлення... ⏳</div>
                 <button type="submit" class="btn-submit" id="submitBtn">Підтвердити замовлення</button>
             </form>
         </div>
     </div>
 
     <script>
-        // ==================== НАЛАШТУВАННЯ ====================
-        // Ваше робоче посилання Google Apps Script
+        const SPREADSHEET_ID = '1cOD58OZMbBNhZQeYU3zz90srFwKbAy6w451uOTMhZTA';
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzbfPGZ0KELATzymA5XDmP5SBuMYJJwPes9t78OuCCbWpeeqn9PuhR2RVHlu4asY4LO_g/exec';
+        const FALLBACK_IMG = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&q=80';
 
-        // Список товарів (автоматично відображається в каталозі)
-        const products = [
-            {
-                id: 1,
-                name: 'Термопакет з клейовою стрічкою',
-                desc: 'Надійний термопакет для збереження температури.',
-                price: 25,
-                image: 'https://i.postimg.cc/zXNW5WKf/1783307351474(1).jpg'
-            },
-            {
-                id: 2,
-                name: 'Термосумка 42л',
-                desc: 'Велика місткість (42 літри). Розмір: 45×45 см.',
-                price: 550,
-                image: 'https://i.postimg.cc/90v6DVbB/1785315546226.jpg'
-            },
-            {
-                id: 3,
-                name: 'Термосумка Wanderlust 40л',
-                desc: 'Стильна та зручна сумка-холодильник.',
-                price: 620,
-                image: 'https://i.postimg.cc/2560v6Zh/1785485328680.jpg'
-            },
-            {
-                id: 4,
-                name: 'Вушка по-корейськи (у вакуумі)',
-                desc: 'Соковиті свинячі вушка, нарізані соломкою.',
-                price: 65,
-                image: 'https://i.postimg.cc/GmBzK4Vj/images.jpg'
-            },
-            {
-                id: 5,
-                name: 'Кришка закаточна Хуторянка',
-                desc: 'Якісні закаточні кришки в упаковці.',
-                price: 120,
-                image: 'https://i.postimg.cc/DfstHPH7/1785309810217.jpg'
-            },
-            {
-                id: 6,
-                name: 'Вакуумний пакувальник Vacuum Sealer',
-                desc: 'Харчовий вакууматор із дисплеєм та пакетами.',
-                price: 480,
-                image: 'https://i.postimg.cc/90rQXyR2/589925639.webp'
-            }
-        ];
-
+        let products = [];
         let cart = {};
+        let currentCategory = 'all';
 
-        // Відображення товарів
-        function renderProducts(itemsToRender = products) {
+        // Завантаження товарів безпосередньо з вашої Google Таблиці
+        async function loadProductsFromSheet() {
+            try {
+                const sheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+                const res = await fetch(sheetUrl);
+                const text = await res.text();
+                
+                // Очищаємо JSONP-відповідь від Google
+                const json = JSON.parse(text.substring(47, text.length - 2));
+                const rows = json.table.rows;
+
+                products = rows.map((row, index) => {
+                    const c = row.c || [];
+                    return {
+                        id: index + 1,
+                        name: c[0] ? String(c[0].v || '') : 'Без назви',
+                        desc: c[1] ? String(c[1].v || '') : '',
+                        price: c[2] ? Number(c[2].v || 0) : 0,
+                        image: c[3] ? String(c[3].v || '') : FALLBACK_IMG,
+                        category: c[4] ? String(c[4].v || 'all').trim() : 'all'
+                    };
+                }).filter(p => p.name !== 'Без назви' && p.price > 0);
+
+                buildCategoryButtons();
+                renderProducts();
+            } catch (err) {
+                console.error('Помилка завантаження даних:', err);
+                document.getElementById('productsGrid').innerHTML = '<div class="empty-msg">Не вдалося завантажити товари. Перевірте доступ до таблиці.</div>';
+            }
+        }
+
+        // Динамічне створення кнопок категорій
+        function buildCategoryButtons() {
+            const categories = ['all', ...new Set(products.map(p => p.category).filter(c => c && c !== 'all'))];
+            const container = document.getElementById('categoryContainer');
+            
+            if (categories.length <= 1) return;
+
+            container.innerHTML = categories.map(cat => {
+                const label = cat === 'all' ? 'Всі товари' : cat;
+                return `<button class="cat-btn ${cat === 'all' ? 'active' : ''}" onclick="setCategory('${cat}', this)">${label}</button>`;
+            }).join('');
+        }
+
+        function renderProducts(itemsToRender = getFilteredProducts()) {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
+
+            if (itemsToRender.length === 0) {
+                grid.innerHTML = '<div class="empty-msg">Товарів не знайдено</div>';
+                return;
+            }
 
             itemsToRender.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
-                    <img src="${p.image}" class="product-img" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="product-img-wrapper">
+                        <img src="${p.image}" class="product-img" alt="${p.name}" onerror="this.onerror=null; this.src='${FALLBACK_IMG}'">
+                    </div>
                     <div class="product-info">
                         <div class="product-title">${p.name}</div>
                         <div class="product-desc">${p.desc}</div>
@@ -450,14 +444,26 @@
             });
         }
 
-        // Пошук товарів
-        function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-            renderProducts(filtered);
+        function setCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts();
         }
 
-        // Управління кошиком
+        function getFilteredProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            return products.filter(p => {
+                const matchesCategory = currentCategory === 'all' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+        }
+
+        function filterProducts() {
+            renderProducts();
+        }
+
         function addToCart(productId) {
             if (cart[productId]) {
                 cart[productId].qty++;
@@ -471,9 +477,7 @@
         function changeQty(productId, delta) {
             if (cart[productId]) {
                 cart[productId].qty += delta;
-                if (cart[productId].qty <= 0) {
-                    delete cart[productId];
-                }
+                if (cart[productId].qty <= 0) delete cart[productId];
             }
             updateCartUI();
             renderCartModalItems();
@@ -492,12 +496,8 @@
             document.getElementById('cartTotalText').innerText = `${totalPrice} грн`;
         }
 
-        // Модальне вікно
         function openModal() {
-            if (Object.keys(cart).length === 0) {
-                alert('Ваш кошик порожній!');
-                return;
-            }
+            if (Object.keys(cart).length === 0) return alert('Ваш кошик порожній!');
             renderCartModalItems();
             document.getElementById('cartModal').classList.add('active');
         }
@@ -509,7 +509,6 @@
         function renderCartModalItems() {
             const container = document.getElementById('cartItemsList');
             container.innerHTML = '';
-
             let totalPrice = 0;
 
             Object.values(cart).forEach(item => {
@@ -535,17 +534,12 @@
             container.appendChild(totalDiv);
         }
 
-        // Відправка замовлення в Google Apps Script
         function submitOrder(e) {
             e.preventDefault();
-
             const name = document.getElementById('userName').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
 
-            if (!name || !phone) {
-                alert('Заповніть будь ласка ім\'я та телефон');
-                return;
-            }
+            if (!name || !phone) return alert('Заповніть будь ласка ім\'я та телефон');
 
             const itemsArray = Object.values(cart).map(item => ({
                 name: item.name,
@@ -554,16 +548,13 @@
                 total: item.price * item.qty
             }));
 
-            let totalSum = itemsArray.reduce((sum, item) => sum + item.total, 0);
-
             const payload = {
                 name: name,
                 phone: phone,
-                totalSum: totalSum.toString(),
+                totalSum: itemsArray.reduce((sum, item) => sum + item.total, 0).toString(),
                 items: itemsArray
             };
 
-            // Індикація завантаження
             document.getElementById('loader').style.display = 'block';
             document.getElementById('submitBtn').style.display = 'none';
 
@@ -580,18 +571,16 @@
                 closeModal();
                 document.getElementById('checkoutForm').reset();
             })
-            .catch(err => {
-                console.error(err);
-                alert('Помилка при відправці замовлення. Спробуйте ще раз.');
-            })
+            .catch(() => alert('Помилка при відправці. Спробуйте ще раз.'))
             .finally(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('submitBtn').style.display = 'block';
             });
         }
 
-        // Ініціалізація
-        renderProducts();
+        // Старт завантаження
+        loadProductsFromSheet();
     </script>
 </body>
 </html>
+
