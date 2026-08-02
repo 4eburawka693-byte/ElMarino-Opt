@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ElMarino Опт</title>
+<title>ElMarino Магазин</title>
 
 <!-- Оптимізація з'єднань -->
 <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
@@ -21,258 +21,275 @@ body { font-family: system-ui, sans-serif; }
 .product-card { transition: all 0.2s ease; cursor: pointer; }
 .product-card:active { transform: scale(0.98); }
 .clamp-desc {
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 .pinch-zoom-container {
-    width: 100%;
-    height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .zoomable-img {
-    max-width: 100%;
-    max-height: 80vh;
-    object-fit: contain;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
 }
 </style>
 </head>
 <body class="bg-[#f4f5f7] notranslate">
 
 <div class="max-w-4xl mx-auto pb-20">
-    <!-- Головний банер -->
-    <div class="w-full overflow-hidden shadow-sm">
-        <img src="https://i.postimg.cc/KvynpRrT/1782584017691.jpg" alt="ElMarino Banner" class="w-full h-auto object-cover block" loading="eager" fetchpriority="high">
+  <!-- Головний банер -->
+  <div class="w-full overflow-hidden shadow-sm">
+    <img src="https://i.postimg.cc/KvynpRrT/1782584017691.jpg" alt="ElMarino Banner" class="w-full h-auto object-cover block" loading="eager" fetchpriority="high">
+  </div>
+
+  <header class="bg-[#242426] text-white p-3 sticky top-0 z-40 shadow-md">
+    <div class="flex justify-between items-center gap-1.5">
+      <div class="flex items-center gap-1.5 min-w-0">
+        <button onclick="goHome()" class="flex items-center justify-center w-10 h-10 bg-[#2d2d30] active:bg-[#3d3d42] rounded-2xl border border-[#3a3a3d] shadow-inner transition-colors shrink-0">
+          🏠
+        </button>
+        <button onclick="showReviewsModal()" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner truncate">
+          ⭐ Відгуки
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <a href="https://t.me/ElMarino_we" target="_blank" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-2.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner">
+          💬 <span class="hidden xs:inline">Задати питання</span><span class="xs:hidden">Питання</span>
+        </a>
+        <button onclick="showCart()" class="flex items-center gap-1.5 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl font-medium transition-colors">
+          🛒 <span id="cart-count" class="bg-amber-400 text-[#242426] text-xs rounded-full px-2 py-0.5 font-bold">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-4 flex flex-col gap-3">
+    <div class="flex gap-2 items-center">
+      <div class="relative flex-1">
+        <input id="search" type="text" placeholder="🔍 Пошук товарів..."
+               class="w-full p-3.5 pl-4 rounded-2xl border border-slate-200 focus:border-amber-500 outline-none shadow-sm text-sm"
+               onkeyup="filterProducts()">
+      </div>
+      <button onclick="resetFilters()" class="bg-white text-slate-700 h-12 px-4 rounded-2xl text-sm font-medium border border-slate-200 active:bg-slate-50 transition-colors shadow-sm">Всі</button>
+
+      <div class="relative">
+        <button onclick="toggleSortMenu()" class="w-12 h-12 bg-white text-slate-700 rounded-2xl text-base font-medium border border-slate-200 active:bg-slate-50 transition-colors flex items-center justify-center shadow-sm">
+          📊
+        </button>
+        <div id="sort-menu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border z-50 overflow-hidden">
+          <button onclick="setSortOrder('default')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">Без сортування</button>
+          <button onclick="setSortOrder('low-to-high')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">💰 Від дешевих до дорогих</button>
+          <button onclick="setSortOrder('high-to-low')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 block">💵 Від дорогих до дешевих</button>
+        </div>
+      </div>
     </div>
 
-    <header class="bg-[#242426] text-white p-3 sticky top-0 z-40 shadow-md">
-        <div class="flex justify-between items-center gap-1.5">
-            <div class="flex items-center gap-1.5 min-w-0">
-                <button onclick="goHome()" class="flex items-center justify-center w-10 h-10 bg-[#2d2d30] active:bg-[#3d3d42] rounded-2xl border border-[#3a3a3d] shadow-inner transition-colors shrink-0">
-                    🏠
-                </button>
-                <button onclick="showReviewsModal()" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner truncate">
-                    ⭐ Відгуки
-                </button>
-            </div>
-
-            <div class="flex items-center gap-1.5 shrink-0">
-                <a href="https://t.me/ElMarino_opt" target="_blank" class="flex items-center gap-1 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-2.5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-bold text-amber-400 transition-colors shadow-inner">
-                    💬 <span class="hidden xs:inline">Задати питання</span><span class="xs:hidden">Питання</span>
-                </a>
-                <button onclick="showCart()" class="flex items-center gap-1.5 bg-[#2d2d30] active:bg-[#3d3d42] border border-[#3a3a3d] px-3.5 py-2.5 rounded-2xl font-medium transition-colors">
-                    🛒 <span id="cart-count" class="bg-amber-400 text-[#242426] text-xs rounded-full px-2 py-0.5 font-bold">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <div class="p-4 flex flex-col gap-3">
-        <div class="flex gap-2 items-center">
-            <div class="relative flex-1">
-                <input id="search" type="text" placeholder="🔍 Пошук товарів..." class="w-full p-3.5 pl-4 rounded-2xl border border-slate-200 focus:border-amber-500 outline-none shadow-sm text-sm" onkeyup="filterProducts()">
-            </div>
-            <button onclick="resetFilters()" class="bg-white text-slate-700 h-12 px-4 rounded-2xl text-sm font-medium border border-slate-200 active:bg-slate-50 transition-colors shadow-sm">Всі</button>
-
-            <div class="relative">
-                <button onclick="toggleSortMenu()" class="w-12 h-12 bg-white text-slate-700 rounded-2xl text-base font-medium border border-slate-200 active:bg-slate-50 transition-colors flex items-center justify-center shadow-sm">
-                    📊
-                </button>
-                <div id="sort-menu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border z-50 overflow-hidden">
-                    <button onclick="setSortOrder('default')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">Без сортування</button>
-                    <button onclick="setSortOrder('low-to-high')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b block">💰 Від дешевих до дорогих</button>
-                    <button onclick="setSortOrder('high-to-low')" class="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 block">💵 Від дорогих до дешевих</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="filter-indicator" class="text-xs text-slate-700 px-3 py-2 hidden flex justify-between items-center bg-amber-50 rounded-xl border border-amber-200">
-            <span id="filter-indicator-text"></span>
-            <button onclick="goHome()" class="text-amber-700 font-bold ml-2">Скинути ✕</button>
-        </div>
+    <div id="filter-indicator" class="text-xs text-slate-700 px-3 py-2 hidden flex justify-between items-center bg-amber-50 rounded-xl border border-amber-200">
+      <span id="filter-indicator-text"></span>
+      <button onclick="goHome()" class="text-amber-700 font-bold ml-2">Скинути ✕</button>
     </div>
+  </div>
 
-    <div id="subcat-anchor" class="scroll-mt-20"></div>
+  <div id="subcat-anchor" class="scroll-mt-20"></div>
 
-    <div class="px-4 mb-3 flex flex-col gap-3">
-        <div id="categories" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-        <div id="subcategories" class="hidden grid grid-cols-2 sm:grid-cols-3 gap-2 bg-[#f2e6dc] p-4 rounded-2xl border-2 border-[#dfc3b0] shadow-inner"></div>
+  <div class="px-4 mb-3 flex flex-col gap-3">
+    <div id="categories" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+    <div id="subcategories" class="hidden grid grid-cols-2 sm:grid-cols-3 gap-2 bg-[#f2e6dc] p-4 rounded-2xl border-2 border-[#dfc3b0] shadow-inner"></div>
+  </div>
+
+  <div id="products" class="px-4 grid grid-cols-2 gap-4">
+    <div class="col-span-2 text-center py-12 text-slate-400 font-medium animate-pulse">
+      ⏳ Завантаження товарів...
     </div>
-
-    <div id="products" class="px-4 grid grid-cols-2 gap-4">
-        <div class="col-span-2 text-center py-12 text-slate-400 font-medium animate-pulse">
-            ⏳ Завантаження товарів...
-        </div>
-    </div>
+  </div>
 </div>
 
 <button onclick="showInstallModal()" class="fixed bottom-5 left-4 z-40 bg-[#242426] active:bg-[#1a1a1b] text-amber-400 w-12 h-12 rounded-full shadow-lg border border-[#3a3a3d] flex items-center justify-center text-xl transition-all hover:scale-105 active:scale-95">
-    📲
+  📲
 </button>
 
+<!-- МОДАЛЬНЕ ВІКНО ВІДГУКІВ -->
 <div id="reviews-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="hideReviewsModal()">
-    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative max-h-[80vh] flex flex-col" onclick="event.stopPropagation()">
-        <button onclick="hideReviewsModal()" class="absolute top-4 right-4 text-slate-400 text-xl p-1 hover:text-slate-600">✕</button>
-        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
-            <span class="text-amber-500">⭐</span> Відгуки
-        </h3>
-        <div id="reviews-list" class="space-y-4 overflow-y-auto flex-1 pr-1 text-sm text-slate-600 my-2">
-            <div class="text-center py-6 text-slate-400">Завантаження відгуків...</div>
-        </div>
-        <div class="border-t pt-4 mt-2">
-            <a href="https://t.me/ElMarino_opt" target="_blank" class="block w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d] text-center text-sm">
-                ✍️ Написати свій відгук у Telegram
-            </a>
-        </div>
+  <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative max-h-[80vh] flex flex-col" onclick="event.stopPropagation()">
+    <button onclick="hideReviewsModal()" class="absolute top-4 right-4 text-slate-400 text-xl p-1 hover:text-slate-600">✕</button>
+    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3">
+      <span class="text-amber-500">⭐</span> Відгуки
+    </h3>
+
+    <div id="reviews-list" class="space-y-4 overflow-y-auto flex-1 pr-1 text-sm text-slate-600 my-2">
+      <div class="text-center py-6 text-slate-400">Завантаження відгуків...</div>
     </div>
+
+    <div class="border-t pt-4 mt-2">
+      <a href="https://t.me/ElMarino_we" target="_blank" class="block w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d] text-center text-sm">
+        ✍️ Написати свій відгук у Telegram
+      </a>
+    </div>
+  </div>
 </div>
 
+<!-- МОДАЛЬНЕ ВІКНО ВСТАНОВЛЕННЯ PWA -->
 <div id="install-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="hideInstallModal()">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
-        <button onclick="hideInstallModal()" class="absolute top-4 right-4 text-slate-400 text-xl p-1">✕</button>
-        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <span class="text-amber-500">📲</span> Додати на головний екран
-        </h3>
-        <div class="space-y-4 text-sm text-slate-600">
-            <p class="leading-relaxed">Щоб швидко відкривати наш оптовий магазин прямо з головного екрана телефону:</p>
-            <div class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-2xl">
-                <span class="font-bold text-amber-900 block mb-1">🍎 Для iPhone (Safari):</span>
-                1. Натисніть кнопку <b class="text-lg text-amber-600">⎋</b> внизу екрана.<br>
-                2. Прокрутіть та оберіть <b>«Додати на початковий екран»</b> <b class="text-base text-amber-600">➕</b>.
-            </div>
-            <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl">
-                <span class="font-bold text-slate-800 block mb-1">🤖 Для Android (Chrome):</span>
-                1. Натисніть <b class="text-lg text-slate-700">⋮</b> у правому верхньому кутку.<br>
-                2. Оберіть <b>«Додати на головний екран»</b> або <b>«Встановити додаток»</b>.
-            </div>
-        </div>
-        <button onclick="triggerNativeInstall(); hideInstallModal();" id="native-install-btn" class="hidden mt-4 w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d]">
-            Встановити автоматично
-        </button>
+  <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
+    <button onclick="hideInstallModal()" class="absolute top-4 right-4 text-slate-400 text-xl p-1">✕</button>
+    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <span class="text-amber-500">📲</span> Додати на головний екран
+    </h3>
+
+    <div class="space-y-4 text-sm text-slate-600">
+      <p class="leading-relaxed">Щоб швидко відкривати наш магазин прямо з головного екрана телефону:</p>
+
+      <div class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-2xl">
+        <span class="font-bold text-amber-900 block mb-1">🍎 Для iPhone (Safari):</span>
+        1. Натисніть кнопку <b class="text-lg text-amber-600">⎋</b> внизу екрана.<br>
+        2. Прокрутіть та оберіть <b>«Додати на початковий екран»</b> <b class="text-base text-amber-600">➕</b>.
+      </div>
+
+      <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl">
+        <span class="font-bold text-slate-800 block mb-1">🤖 Для Android (Chrome):</span>
+        1. Натисніть <b class="text-lg text-slate-700">⋮</b> у правому верхньому кутку.<br>
+        2. Оберіть <b>«Додати на головний екран»</b> або <b>«Встановити додаток»</b>.
+      </div>
     </div>
+
+    <button onclick="triggerNativeInstall(); hideInstallModal();" id="native-install-btn" class="hidden mt-4 w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-3 rounded-xl font-bold transition-all shadow-md border border-[#3a3a3d]">
+      Встановити автоматично
+    </button>
+  </div>
 </div>
 
 <!-- ПОВНОЕКРАННА КАРТОЧКА ТОВАРУ -->
 <div id="product-modal" class="hidden fixed inset-0 bg-white z-50 flex flex-col" onclick="hideProductModal()">
-    <div class="bg-white w-full h-full flex flex-col relative" onclick="event.stopPropagation()">
-        <button onclick="hideProductModal()" class="fixed top-4 right-4 bg-[#242426]/70 text-white w-10 h-10 rounded-full flex items-center justify-center text-base font-bold z-50 shadow-lg border border-white/20 active:scale-95">✕</button>
+  <div class="bg-white w-full h-full flex flex-col relative" onclick="event.stopPropagation()">
 
-        <div class="overflow-y-auto flex-1 pb-28">
-            <div id="modal-swipe-zone" class="w-full h-80 sm:h-96 bg-slate-50 flex items-center justify-center overflow-hidden relative cursor-zoom-in">
-                <img id="modal-product-image" src="" class="max-w-full max-h-full object-contain" loading="eager" fetchpriority="high" onclick="openFullscreenPhoto()">
-                <button id="prev-photo-btn" onclick="changePhoto(-1); event.stopPropagation();" class="absolute left-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＜</button>
-                <button id="next-photo-btn" onclick="changePhoto(1); event.stopPropagation();" class="absolute right-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＞</button>
-                <span id="photo-counter" class="absolute bottom-3 right-3 bg-[#242426]/60 text-white text-xs px-2.5 py-1 rounded-full font-medium"></span>
-            </div>
+    <button onclick="hideProductModal()" class="fixed top-4 right-4 bg-[#242426]/70 text-white w-10 h-10 rounded-full flex items-center justify-center text-base font-bold z-50 shadow-lg border border-white/20 active:scale-95">✕</button>
 
-            <div class="p-5">
-                <span id="modal-product-category" class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100"></span>
-                <h2 id="modal-product-name" class="text-2xl font-bold text-slate-800 mt-3 leading-tight"></h2>
-                <p id="modal-product-description" class="text-slate-600 text-sm mt-3 whitespace-pre-line leading-relaxed"></p>
+    <div class="overflow-y-auto flex-1 pb-28">
+      <div id="modal-swipe-zone" class="w-full h-80 sm:h-96 bg-slate-50 flex items-center justify-center overflow-hidden relative cursor-zoom-in">
+        <img id="modal-product-image" src="" class="max-w-full max-h-full object-contain" loading="eager" fetchpriority="high" onclick="openFullscreenPhoto()">
+        <button id="prev-photo-btn" onclick="changePhoto(-1); event.stopPropagation();" class="absolute left-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＜</button>
+        <button id="next-photo-btn" onclick="changePhoto(1); event.stopPropagation();" class="absolute right-3 bg-[#242426]/40 text-white w-9 h-9 rounded-full flex items-center justify-center font-bold text-lg active:bg-[#242426]/60 select-none">＞</button>
+        <span id="photo-counter" class="absolute bottom-3 right-3 bg-[#242426]/60 text-white text-xs px-2.5 py-1 rounded-full font-medium"></span>
+      </div>
 
-                <div id="size-selector-block" class="hidden mt-5 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
-                    <span id="modal-size-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть варіант:</span>
-                    <select id="modal-size-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="updateModalPrice()"></select>
-                </div>
+      <div class="p-5">
+        <span id="modal-product-category" class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100"></span>
+        <h2 id="modal-product-name" class="text-2xl font-bold text-slate-800 mt-3 leading-tight"></h2>
+        <p id="modal-product-description" class="text-slate-600 text-sm mt-3 whitespace-pre-line leading-relaxed"></p>
 
-                <div id="color-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
-                    <span id="modal-color-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть колір:</span>
-                    <select id="modal-color-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="syncPhotoByColor()"></select>
-                </div>
-
-                <div id="scent-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
-                    <span id="modal-scent-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть запах:</span>
-                    <select id="modal-scent-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]"></select>
-                </div>
-
-                <div class="mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
-                    <span class="text-slate-600 font-medium text-sm pl-2">Кількість:</span>
-                    <div class="flex items-center gap-1">
-                        <button onclick="changeModalQty(-1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">-</button>
-                        <span id="modal-qty" class="w-12 text-center font-bold text-slate-800 text-lg">1</span>
-                        <button onclick="changeModalQty(1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">+</button>
-                    </div>
-                </div>
-            </div>
+        <div id="size-selector-block" class="hidden mt-5 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+          <span id="modal-size-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть варіант:</span>
+          <select id="modal-size-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="updateModalPrice()"></select>
         </div>
 
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex items-center justify-between gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
-            <div>
-                <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 inline-block mb-0.5">Оптова ціна</span>
-                <span id="modal-product-price" class="text-2xl font-black text-slate-800 block"></span>
-            </div>
-            <button id="modal-product-btn" class="flex-1 bg-[#242426] active:bg-[#323235] text-amber-400 py-4 rounded-2xl font-bold transition-all shadow-lg text-center border border-[#3a3a3d] text-base">
-                Додати в кошик
-            </button>
+        <div id="color-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+          <span id="modal-color-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть колір:</span>
+          <select id="modal-color-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]" onchange="syncPhotoByColor()"></select>
         </div>
+
+        <div id="scent-selector-block" class="hidden mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+          <span id="modal-scent-label" class="text-slate-600 font-medium text-sm pl-2">Оберіть запах:</span>
+          <select id="modal-scent-select" class="p-2.5 rounded-xl border bg-white font-bold text-slate-700 outline-none focus:border-amber-500 min-w-[140px]"></select>
+        </div>
+
+        <div class="mt-4 flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl justify-between border border-slate-100">
+          <span class="text-slate-600 font-medium text-sm pl-2">Кількість:</span>
+          <div class="flex items-center gap-1">
+            <button onclick="changeModalQty(-1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">-</button>
+            <span id="modal-qty" class="w-12 text-center font-bold text-slate-800 text-lg">1</span>
+            <button onclick="changeModalQty(1)" class="w-10 h-10 bg-white rounded-xl border font-bold text-xl active:bg-slate-100 shadow-sm">+</button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex items-center justify-between gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
+      <div>
+        <span class="text-slate-400 text-xs block font-medium">Загальна ціна</span>
+        <span id="modal-product-price" class="text-2xl font-black text-slate-800"></span>
+      </div>
+      <button id="modal-product-btn" class="flex-1 bg-[#242426] active:bg-[#323235] text-amber-400 py-4 rounded-2xl font-bold transition-all shadow-lg text-center border border-[#3a3a3d] text-base">
+        Додати в кошик
+      </button>
+    </div>
+
+  </div>
 </div>
 
+<!-- ЛАЙТБОКС ДЛЯ ПЕРЕГЛЯДУ ФОТО З PINCH-ZOOM -->
 <div id="fullscreen-lightbox" class="hidden fixed inset-0 bg-slate-950/95 z-[60] flex flex-col items-center justify-center p-4" onclick="closeFullscreenPhoto()">
-    <button onclick="closeFullscreenPhoto()" class="fixed top-6 right-6 text-white text-3xl font-light hover:text-slate-300 z-[70] bg-black/40 w-12 h-12 rounded-full flex items-center justify-center">✕</button>
-    <div id="lightbox-content-area" class="w-full flex items-center justify-center"></div>
-    <button id="lightbox-prev-btn" onclick="changePhoto(-1); updateLightboxImage(); event.stopPropagation();" class="fixed left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＜</button>
-    <button id="lightbox-next-btn" onclick="changePhoto(1); updateLightboxImage(); event.stopPropagation();" class="fixed right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＞</button>
+  <button onclick="closeFullscreenPhoto()" class="fixed top-6 right-6 text-white text-3xl font-light hover:text-slate-300 z-[70] bg-black/40 w-12 h-12 rounded-full flex items-center justify-center">✕</button>
+  <div id="lightbox-content-area" class="w-full flex items-center justify-center"></div>
+  <button id="lightbox-prev-btn" onclick="changePhoto(-1); updateLightboxImage(); event.stopPropagation();" class="fixed left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＜</button>
+  <button id="lightbox-next-btn" onclick="changePhoto(1); updateLightboxImage(); event.stopPropagation();" class="fixed right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl select-none z-[65]">＞</button>
 </div>
 
-<!-- КОШИК -->
+<!-- МОДАЛЬНЕ ВІКНО КОШИКА -->
 <div id="cart-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end z-50" onclick="hideCart()">
-    <div class="bg-white w-full rounded-t-3xl max-h-[85vh] overflow-auto p-5 flex flex-col" onclick="event.stopPropagation()">
-        <div class="flex justify-between mb-4 items-center">
-            <h2 class="text-2xl font-bold text-slate-800">Кошик</h2>
-            <button onclick="hideCart()" class="text-3xl text-slate-400 p-1">✕</button>
-        </div>
-        <div id="cart-items" class="space-y-4 overflow-y-auto flex-1"></div>
-        <div class="mt-4 border-t pt-4">
-            <div class="flex justify-between text-xl font-bold text-slate-800">
-                <span>Разом:</span>
-                <span id="cart-total">0 грн</span>
-            </div>
-            <button onclick="showCheckoutModal()" class="mt-4 w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-2xl text-lg font-bold transition-colors shadow-lg text-center border border-[#3a3a3d]">
-                Оформити замовлення
-            </button>
-        </div>
+  <div class="bg-white w-full rounded-t-3xl max-h-[85vh] overflow-auto p-5 flex flex-col" onclick="event.stopPropagation()">
+    <div class="flex justify-between mb-4 items-center">
+      <h2 class="text-2xl font-bold text-slate-800">Кошик</h2>
+      <button onclick="hideCart()" class="text-3xl text-slate-400 p-1">✕</button>
     </div>
+    <div id="cart-items" class="space-y-4 overflow-y-auto flex-1"></div>
+    <div class="mt-4 border-t pt-4">
+      <div class="flex justify-between text-xl font-bold text-slate-800">
+        <span>Разом:</span>
+        <span id="cart-total">0 грн</span>
+      </div>
+      <button onclick="showCheckoutModal()" class="mt-4 w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-2xl text-lg font-bold transition-colors shadow-lg text-center border border-[#3a3a3d]">
+        Оформити замовлення
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- ОФОРМЛЕННЯ ЗАМОВЛЕННЯ -->
+<!-- МОДАЛЬНЕ ВІКНО ОФОРМЛЕННЯ ЗАМОВЛЕННЯ -->
 <div id="checkout-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-[55]" onclick="hideCheckoutModal()">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
-        <button onclick="hideCheckoutModal()" class="absolute top-4 right-4 text-slate-400 text-2xl p-1">✕</button>
-        <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">📝 Оформити замовлення</h3>
-        <div class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Ваше Ім'я:</label>
-                <input id="customer-name" type="text" placeholder="Наприклад: Олександр" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Номер телефону:</label>
-                <input id="customer-phone" type="text" placeholder="Наприклад: +380960000000" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
-            </div>
-            <button onclick="submitOrder()" class="w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-xl font-bold text-base transition-all shadow-md mt-4 border border-[#3a3a3d]">
-                🚀 Надіслати замовлення
-            </button>
-        </div>
+  <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl relative" onclick="event.stopPropagation()">
+    <button onclick="hideCheckoutModal()" class="absolute top-4 right-4 text-slate-400 text-2xl p-1">✕</button>
+    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">📝 Оформити замовлення</h3>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Ваше Ім'я:</label>
+        <input id="customer-name" type="text" placeholder="Наприклад: Олександр" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Номер телефону:</label>
+        <input id="customer-phone" type="text" placeholder="Наприклад: +380960000000" class="w-full p-4 rounded-xl border outline-none focus:border-amber-500 shadow-sm text-slate-800 font-medium text-sm">
+      </div>
+      <button onclick="submitOrder()" class="w-full bg-[#242426] hover:bg-[#323235] text-amber-400 py-4 rounded-xl font-bold text-base transition-all shadow-md mt-4 border border-[#3a3a3d]">
+        🚀 Надіслати замовлення
+      </button>
     </div>
+  </div>
 </div>
 
 <script>
-const SHEET_ID = '1cOD58OZMbBNhZQeYU3zz90srFwKbAy6w451uOTMhZTA';
+const SHEET_ID = '1SyxBE2iwqqt-JtEZ8N9vkdrtxUUcxtv_goVA878TMog';
+const TELEGRAM_BOT_TOKEN = '8935350713:AAFiU_OAvjEE-xPv33SAnUGTRpMKeXodKjU';
+const TELEGRAM_CHAT_ID = '@ElMarino_we'; // Або ваші власники/група
+
 const SPREADSHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
 const REVIEWS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=відгуки`;
 
 tailwind.config = {
-    theme: {
-        extend: {
-            screens: {
-                'xs': '390px',
-            }
-        }
+  theme: {
+    extend: {
+      screens: {
+        'xs': '390px',
+      }
     }
+  }
 }
 
 let allProducts = [];
@@ -289,417 +306,434 @@ let currentSortOrder = "default";
 
 let touchStartX = 0;
 let touchEndX = 0;
-let ignoreSwipe = false;
 let pzInstance = null;
 
 let deferredInstallPrompt = null;
 let loadedReviews = [];
 
 function showInstallModal() {
-    document.getElementById('install-modal').classList.remove('hidden');
-    history.pushState({modal: "install"}, null, null);
-    if (deferredInstallPrompt) {
-        document.getElementById('native-install-btn').classList.remove('hidden');
-    }
+  document.getElementById('install-modal').classList.remove('hidden');
+  history.pushState({modal: "install"}, null, null);
+  if (deferredInstallPrompt) {
+    document.getElementById('native-install-btn').classList.remove('hidden');
+  }
 }
 
 function hideInstallModal(fromPopState = false) {
-    document.getElementById('install-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "install") history.back();
+  document.getElementById('install-modal').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "install") history.back();
 }
 
 function triggerNativeInstall() {
-    if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.then((choiceResult) => {
-            deferredInstallPrompt = null;
-            document.getElementById('native-install-btn').classList.add('hidden');
-        });
-    }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then((choiceResult) => {
+      deferredInstallPrompt = null;
+      document.getElementById('native-install-btn').classList.add('hidden');
+    });
+  }
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
+  e.preventDefault();
+  deferredInstallPrompt = e;
 });
 
 function parseOptionsField(optionsStr) {
-    let result = {
-        sizeLabel: 'Оберіть розмір:', sizes: [],
-        colorLabel: 'Оберіть колір:', colors: [],
-        scentLabel: 'Оберіть запах:', scents: []
-    };
-    if (!optionsStr || optionsStr.trim() === "") return result;
+  let result = {
+    sizeLabel: 'Оберіть розмір:',
+    sizes: [],
+    colorLabel: 'Оберіть колір:',
+    colors: [],
+    scentLabel: 'Оберіть запах:',
+    scents: []
+  };
+  if (!optionsStr || optionsStr.trim() === "") return result;
 
-    let normalized = optionsStr
-        .replace(/([^;\r\n]+)\s+(Розмір|Цвет|Колір|Размер|Запах|Аромат|Вкус|Смак)/gi, '$1\n$2')
-        .replace(/;/g, '\n');
+  let normalized = optionsStr
+    .replace(/([^;\r\n]+)\s+(Розмір|Цвет|Колір|Размер|Запах|Аромат|Вкус|Смак)/gi, '$1\n$2')
+    .replace(/;/g, '\n');
 
-    const lines = normalized.split(/\r?\n/);
-    lines.forEach(line => {
-        const match = line.match(/([^\n\r]+?)\s*:\s*([^\n\r]+)/);
-        if (match && match[1] && match[2]) {
-            let rawLabel = match[1].trim();
-            let rawValues = match[2].trim();
+  const lines = normalized.split(/\r?\n/);
 
-            if (/колір|кольори|цвет|цвета/i.test(rawLabel)) {
-                let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
-                result.colorLabel = `${cleanLabel}:`; 
-                result.colors = rawValues.split(',').map(c => c.trim()).filter(Boolean);
-            } else if (/запах|аромат|вкус|смак/i.test(rawLabel)) { 
-                let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1); 
-                result.scentLabel = `${cleanLabel}:`;
-                result.scents = rawValues.split(',').map(s => s.trim()).filter(Boolean);
-            } else {
-                let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
-                result.sizeLabel = `${cleanLabel}:`;
-                result.sizes = rawValues.split(',').map(s => s.trim()).filter(Boolean);
-            }
-        }
-    });
-    return result;
+  lines.forEach(line => {
+    const match = line.match(/([^\n\r]+?)\s*:\s*([^\n\r]+)/);
+    if (match && match[1] && match[2]) {
+      let rawLabel = match[1].trim();
+      let rawValues = match[2].trim();
+
+      if (/колір|кольори|цвет|цвета/i.test(rawLabel)) {
+        let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+        result.colorLabel = `${cleanLabel}:`;
+        result.colors = rawValues.split(',').map(c => c.trim()).filter(Boolean);
+      } else if (/запах|аромат|вкус|смак/i.test(rawLabel)) {
+        let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+        result.scentLabel = `${cleanLabel}:`;
+        result.scents = rawValues.split(',').map(s => s.trim()).filter(Boolean);
+      } else {
+        let cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+        result.sizeLabel = `${cleanLabel}:`;
+        result.sizes = rawValues.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+  });
+
+  return result;
 }
 
 function parseSizePrice(sizeStr, defaultPrice) {
-    let sizeName = sizeStr;
-    let price = String(defaultPrice).replace(/\s/g, '').replace(',', '.');
+  let sizeName = sizeStr;
+  let price = String(defaultPrice).replace(/\s/g, '').replace(',', '.');
 
-    if (sizeStr.includes('-')) {
-        let parts = sizeStr.split('-');
-        sizeName = parts[0].trim();
-        let rawPricePart = parts[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
-        if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
-            price = parseFloat(rawPricePart).toFixed(2);
-        }
-    } else {
-        let priceMatch = sizeStr.match(/\(([^)]+)\)/);
-        if (priceMatch && priceMatch[1]) {
-            sizeName = sizeStr.replace(/\s*\([^)]+\)\s*/g, '').trim();
-            let rawPricePart = priceMatch[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
-            if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
-                price = parseFloat(rawPricePart).toFixed(2);
-            }
-        }
+  if (sizeStr.includes('-')) {
+    let parts = sizeStr.split('-');
+    sizeName = parts[0].trim();
+    let rawPricePart = parts[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
+    if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
+      price = parseFloat(rawPricePart).toFixed(2);
     }
-    return { sizeName, price: parseFloat(price).toFixed(2) };
+  } else {
+    let priceMatch = sizeStr.match(/\(([^)]+)\)/);
+    if (priceMatch && priceMatch[1]) {
+      sizeName = sizeStr.replace(/\s*\([^)]+\)\s*/g, '').trim();
+      let rawPricePart = priceMatch[1].replace(/[^\d.,]/g, '').replace(',', '.').trim();
+      if (rawPricePart && !isNaN(parseFloat(rawPricePart))) {
+        price = parseFloat(rawPricePart).toFixed(2);
+      }
+    }
+  }
+
+  return { sizeName, price: parseFloat(price).toFixed(2) };
 }
 
 const parseCSV = (text) => {
-    let p = '', r = [];
-    let q = false;
-    let row = [''];
-    for (let i=0; i<text.length; i++) {
-        let c = text[i];
-        if (c === '"') { q = !q; continue; }
-        if (c === ',' && !q) { row.push(''); continue; }
-        if ((c === '\n' || c === '\r') && !q) {
-            if (c === '\n' && text[i-1] === '\r') continue;
-            r.push(row); row = ['']; continue;
-        }
-        row[row.length-1] += c;
+  let p = '', r = [];
+  let q = false;
+  let row = [''];
+  for (let i = 0; i < text.length; i++) {
+    let c = text[i];
+    if (c === '"') { q = !q; continue; }
+    if (c === ',' && !q) { row.push(''); continue; }
+    if ((c === '\n' || c === '\r') && !q) {
+      if (c === '\n' && text[i-1] === '\r') continue;
+      r.push(row); row = ['']; continue;
     }
-    if (row.length > 1 || row[0] !== '') r.push(row);
-    return r;
+    row[row.length-1] += c;
+  }
+  if (row.length > 1 || row[0] !== '') r.push(row);
+  return r;
 };
 
-// ОБРАБОТЧИК КНОПКИ «НАЗАД» В БРАУЗЕРЕ
 window.addEventListener('popstate', function () {
-    const modalOpen = !document.getElementById('product-modal').classList.contains('hidden');
-    const cartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
-    const lightboxOpen = !document.getElementById('fullscreen-lightbox').classList.contains('hidden');
-    const checkoutOpen = !document.getElementById('checkout-modal').classList.contains('hidden');
-    const installOpen = !document.getElementById('install-modal').classList.contains('hidden');
-    const reviewsOpen = !document.getElementById('reviews-modal').classList.contains('hidden');
+  const modalOpen = !document.getElementById('product-modal').classList.contains('hidden');
+  const cartOpen = !document.getElementById('cart-modal').classList.contains('hidden');
+  const lightboxOpen = !document.getElementById('fullscreen-lightbox').classList.contains('hidden');
+  const checkoutOpen = !document.getElementById('checkout-modal').classList.contains('hidden');
+  const installOpen = !document.getElementById('install-modal').classList.contains('hidden');
+  const reviewsOpen = !document.getElementById('reviews-modal').classList.contains('hidden');
 
-    if (lightboxOpen) { closeFullscreenPhoto(); } 
-    else if (checkoutOpen) { hideCheckoutModal(true); } 
-    else if (modalOpen) { hideProductModal(true); } 
-    else if (cartOpen) { hideCart(true); } 
-    else if (installOpen) { hideInstallModal(true); } 
-    else if (reviewsOpen) { hideReviewsModal(true); }
+  if (lightboxOpen) {
+    closeFullscreenPhoto(true);
+  } else if (checkoutOpen) {
+    hideCheckoutModal(true);
+  } else if (modalOpen) {
+    hideProductModal(true);
+  } else if (cartOpen) {
+    hideCart(true);
+  } else if (installOpen) {
+    hideInstallModal(true);
+  } else if (reviewsOpen) {
+    hideReviewsModal(true);
+  }
 });
 
 document.addEventListener('click', function(e) {
-    const menu = document.getElementById('sort-menu');
-    if (menu && !menu.classList.contains('hidden') && !e.target.closest('.relative')) {
-        menu.classList.add('hidden');
-    }
+  const menu = document.getElementById('sort-menu');
+  if (menu && !menu.classList.contains('hidden') && !e.target.closest('.relative')) {
+    menu.classList.add('hidden');
+  }
 });
 
 function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = 'notranslate';
-    const bg = type === 'success' ? '#242426' : '#ef4444';
-    const textColor = type === 'success' ? '#fbbf24' : '#ffffff';
-    const borderStyle = type === 'success' ? 'border: 1px solid #3a3a3d;' : '';
-    
-    toast.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${bg};color:${textColor};padding:12px 24px;border-radius:999px;font-size:14px;font-weight:bold;z-index:9999;transition:opacity 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.15);${borderStyle}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+  const toast = document.createElement('div');
+  toast.className = 'notranslate';
+  const bg = type === 'success' ? '#242426' : '#ef4444';
+  const textColor = type === 'success' ? '#fbbf24' : '#ffffff';
+  const borderStyle = type === 'success' ? 'border border-[#3a3a3d]' : '';
+  toast.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${bg};color:${textColor};padding:12px 24px;border-radius:16px;z-index:9999;font-weight:bold;font-size:14px;box-shadow:0 10px 25px rgba(0,0,0,0.2);transition:all 0.3s ease;${borderStyle}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
 }
 
 async function loadReviewsFromSheet() {
-    try {
-        const response = await fetch(REVIEWS_URL);
-        if (!response.ok) throw new Error("Не вдалося завантажити відгуки");
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
+  try {
+    const response = await fetch(REVIEWS_URL);
+    if (!response.ok) throw new Error("Не вдалося завантажити відгуки");
+    const csvText = await response.text();
+    const rows = parseCSV(csvText);
 
-        loadedReviews = [];
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (row && row[0] && row[0].trim() !== '') {
-                loadedReviews.push({
-                    name: row[0].trim(),
-                    text: row[1] ? row[1].trim() : '',
-                    rating: row[2] ? parseInt(row[2].trim()) : 5,
-                    date: row[3] ? row[3].trim() : ''
-                });
-            }
-        }
-        renderReviews();
-    } catch (err) {
-        document.getElementById('reviews-list').innerHTML = `<div class="text-center py-6 text-red-400">Не вдалося завантажити відгуки. Спробуйте пізніше.</div>`;
+    loadedReviews = [];
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (row && row[0] && row[0].trim() !== '') {
+        loadedReviews.push({
+          name: row[0].trim(),
+          text: row[1] ? row[1].trim() : '',
+          rating: row[2] ? parseInt(row[2].trim()) : 5,
+          date: row[3] ? row[3].trim() : ''
+        });
+      }
     }
+    renderReviews();
+  } catch (err) {
+    console.error("Помилка завантаження відгуків:", err);
+    document.getElementById('reviews-list').innerHTML = `<div class="text-center py-6 text-red-400">Не вдалося завантажити відгуки. Спробуйте пізніше.</div>`;
+  }
 }
 
 function renderReviews() {
-    const container = document.getElementById('reviews-list');
-    if (loadedReviews.length === 0) {
-        container.innerHTML = `<div class="text-center py-10 text-slate-400">Відгуків поки немає. Будьте першим, хто залишить відгук!</div>`;
-        return;
-    }
+  const container = document.getElementById('reviews-list');
+  if (loadedReviews.length === 0) {
+    container.innerHTML = `<div class="text-center py-10 text-slate-400">Відгуків поки немає. Будьте першим, хто залишить відгук!</div>`;
+    return;
+  }
 
-    let html = '';
-    loadedReviews.forEach(rev => {
-        let stars = '⭐'.repeat(rev.rating || 5);
-        let dateHtml = rev.date ? `<div class="text-[10px] text-slate-400 mt-2 text-right">${rev.date}</div>` : '';
-        html += `<div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm"><div class="flex justify-between items-center mb-1.5"><span class="font-bold text-slate-800 text-sm">${rev.name}</span><span class="text-xs text-amber-500 font-bold flex gap-0.5">${stars}</span></div><p class="text-slate-600 text-xs leading-relaxed whitespace-pre-line">${rev.text}</p>${dateHtml}</div>`;
-    });
-    container.innerHTML = html;
+  let html = '';
+  loadedReviews.forEach(rev => {
+    let stars = '⭐'.repeat(rev.rating || 5);
+    html += `<div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="font-bold text-slate-800 text-sm">${rev.name}</span>
+        <span class="text-xs text-amber-500 font-bold flex gap-0.5">${stars}</span>
+      </div>
+      <p class="text-slate-600 text-xs leading-relaxed whitespace-pre-line">${rev.text}</p>
+      ${rev.date ? `<div class="text-[10px] text-slate-400 mt-2 text-right">${rev.date}</div>` : ''}
+    </div>`;
+  });
+  container.innerHTML = html;
 }
 
 function showReviewsModal() {
-    document.getElementById('reviews-modal').classList.remove('hidden');
-    history.pushState({modal: "reviews"}, null, null);
-    loadReviewsFromSheet();
+  document.getElementById('reviews-modal').classList.remove('hidden');
+  history.pushState({modal: "reviews"}, null, null);
+  loadReviewsFromSheet();
 }
 
 function hideReviewsModal(fromPopState = false) {
-    document.getElementById('reviews-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "reviews") history.back();
+  document.getElementById('reviews-modal').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "reviews") history.back();
 }
 
 async function loadProductsFromSheet() {
-    const CACHE_KEY = 'elmarino_opt_products_cache_v2';
-    const CACHE_TIME_KEY = 'elmarino_opt_cache_time_v2';
-    const CACHE_EXPIRE = 5 * 60 * 1000;
+  const CACHE_KEY = 'elmarino_retail_products_cache_v2';
+  const CACHE_TIME_KEY = 'elmarino_retail_cache_time_v2';
+  const CACHE_EXPIRE = 5 * 60 * 1000;
 
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-    const now = Date.now();
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+  const now = Date.now();
 
-    if (cachedData && cachedTime && (now - cachedTime < CACHE_EXPIRE)) {
-        allProducts = JSON.parse(cachedData);
-        renderCategories();
-        applyFilterAndSort();
-        initSwipeListeners();
-        return;
-    }
+  if (cachedData && cachedTime && (now - cachedTime < CACHE_EXPIRE)) {
+    allProducts = JSON.parse(cachedData);
+    renderCategories();
+    applyFilterAndSort();
+    initSwipeListeners();
+    return;
+  }
 
-    try {
-        const response = await fetch(SPREADSHEET_URL);
-        if (!response.ok) throw new Error(`Помилка:${response.status}`);
-        const csvText = await response.text();
+  try {
+    const response = await fetch(SPREADSHEET_URL);
+    if (!response.ok) throw new Error(`Помилка: ${response.status}`);
+    const csvText = await response.text();
 
-        let rows = parseCSV(csvText);
-        allProducts = [];
+    let rows = parseCSV(csvText);
+    allProducts = [];
 
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (row && row[0] && row[0].trim() !== '') {
-                let imagesArray = [];
-                if (row[4]) {
-                    imagesArray = row[4].split(',')
-                        .map(url => url.trim().replace(/[\r\n]/g, ''))
-                        .filter(Boolean);
-                }
-                let safePrice = row[2] ? row[2].trim() : '0,00';
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (row && row[0] && row[0].trim() !== '') {
+        let imagesArray = [];
+        if (row[4]) {
+          imagesArray = row[4].split(',')
+            .map(url => url.trim().replace(/[\r\n]/g, ''))
+            .filter(Boolean);
+        }
+        let safePrice = row[2] ? row[2].trim() : '0,00';
 
-                let rawCategory = row[1] ? row[1].trim() : 'Інше';
-                let categoryPart = rawCategory;
-                let subcategoryPart = null;
+        let rawCategory = row[1] ? row[1].trim() : 'Інше';
+        let categoryPart = rawCategory;
+        let subcategoryPart = null;
 
-                if (rawCategory.includes('/')) {
-                    let parts = rawCategory.split('/');
-                    categoryPart = parts[0].trim();
-                    subcategoryPart = parts[1].trim();
-                }
-
-                allProducts.push({
-                    name: row[0].trim(),
-                    category: categoryPart,
-                    subcategory: subcategoryPart,
-                    price: safePrice,
-                    description: row[3] ? row[3].trim() : '',
-                    images: imagesArray,
-                    optionsField: row[5] ? row[5].trim() : '',
-                    searchTags: row[6] ? row[6].trim() : ''
-                });
-            }
+        if (rawCategory.includes('/')) {
+          let parts = rawCategory.split('/');
+          categoryPart = parts[0].trim();
+          subcategoryPart = parts[1].trim();
         }
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
-        localStorage.setItem(CACHE_TIME_KEY, now.toString());
-
-        renderCategories();
-        applyFilterAndSort();
-        initSwipeListeners();
-    } catch (error) {
-        if (cachedData) {
-            allProducts = JSON.parse(cachedData);
-            renderCategories();
-            applyFilterAndSort();
-            initSwipeListeners();
-        }
+        allProducts.push({
+          name: row[0].trim(),
+          category: categoryPart,
+          subcategory: subcategoryPart,
+          price: safePrice,
+          description: row[3] ? row[3].trim() : '',
+          images: imagesArray,
+          optionsField: row[5] ? row[5].trim() : '',
+          searchTags: row[6] ? row[6].trim() : ''
+        });
+      }
     }
+
+    localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
+    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+
+    renderCategories();
+    applyFilterAndSort();
+    initSwipeListeners();
+  } catch (error) {
+    console.error(error);
+    if (cachedData) {
+      allProducts = JSON.parse(cachedData);
+      renderCategories();
+      applyFilterAndSort();
+      initSwipeListeners();
+    }
+  }
 }
 
 function renderCategories() {
-    const cats = [];
-    allProducts.forEach(p => {
-        if (p.category && !cats.includes(p.category)) cats.push(p.category);
-    });
+  const cats = [];
+  allProducts.forEach(p => {
+    if (p.category && !cats.includes(p.category)) cats.push(p.category);
+  });
 
-    let html = '';
-    cats.forEach(cat => {
-        const activeStyle = (cat === selectedCategory) ? 'border-[#3a3a3d] bg-[#242426] font-bold text-amber-400 scale-[1.02]' : 'bg-white text-slate-700 border-slate-200';
-        html += `<div onclick="filterByCategory('${cat}')" class="${activeStyle} p-3 rounded-2xl shadow-sm text-center text-xs font-semibold cursor-pointer border hover:border-amber-400 transition-all">${cat}</div>`;
-    });
-    document.getElementById('categories').innerHTML = html;
+  let html = '';
+  cats.forEach(cat => {
+    const activeStyle = (cat === selectedCategory) ? 'border-[#3a3a3d] bg-[#242426] font-bold text-amber-400 scale-[1.02]' : 'bg-white text-slate-700 border-slate-200';
+    html += `<div onclick="filterByCategory('${cat}')" class="${activeStyle} p-3 rounded-2xl shadow-sm text-center text-xs font-semibold cursor-pointer border hover:border-amber-400 transition-all">${cat}</div>`;
+  });
+  document.getElementById('categories').innerHTML = html;
 
-    renderSubcategories();
+  renderSubcategories();
 }
 
 function renderSubcategories() {
-    const subContainer = document.getElementById('subcategories');
-    if (!selectedCategory) {
-        subContainer.classList.add('hidden');
-        return;
+  const subContainer = document.getElementById('subcategories');
+  if (!selectedCategory) {
+    subContainer.classList.add('hidden');
+    return;
+  }
+
+  const subcats = [];
+  allProducts.forEach(p => {
+    if (p.category === selectedCategory && p.subcategory && !subcats.includes(p.subcategory)) {
+      subcats.push(p.subcategory);
     }
+  });
 
-    const subcats = [];
-    allProducts.forEach(p => {
-        if (p.category === selectedCategory && p.subcategory && !subcats.includes(p.subcategory)) {
-            subcats.push(p.subcategory);
-        }
-    });
+  if (subcats.length === 0) {
+    subContainer.classList.add('hidden');
+    return;
+  }
 
-    if (subcats.length === 0) {
-        subContainer.classList.add('hidden');
-        return;
-    }
-
-    subContainer.classList.remove('hidden');
-    let html = '';
-    subcats.forEach(sub => {
-        const activeStyle = (sub === selectedSubcategory) ? 'border-[#3b2d2c] bg-[#4a3e3d] font-bold text-amber-400 shadow-md scale-[1.01]' : 'bg-white text-[#5c4a44] border-[#dfc3b0] hover:border-[#cbb09d]';
-        html += `<div onclick="filterBySubcategory('${sub}')" class="${activeStyle} p-2.5 rounded-xl text-center text-xs cursor-pointer border transition-all">${sub}</div>`;
-    });
-    subContainer.innerHTML = html;
+  subContainer.classList.remove('hidden');
+  let html = '';
+  subcats.forEach(sub => {
+    const activeStyle = (sub === selectedSubcategory) ? 'border-[#3b2d2c] bg-[#4a3e3d] font-bold text-amber-400 shadow-md scale-[1.01]' : 'bg-white text-[#5c4a44] border-[#dfc3b0] hover:border-[#cbb09d]';
+    html += `<div onclick="filterBySubcategory('${sub}')" class="${activeStyle} p-2.5 rounded-xl text-center text-xs font-medium cursor-pointer border transition-all truncate">${sub}</div>`;
+  });
+  subContainer.innerHTML = html;
 }
 
 function applyFilterAndSort() {
-    let filtered = [...allProducts];
+  let filtered = [...allProducts];
 
-    if (selectedCategory) {
-        filtered = filtered.filter(p => p.category === selectedCategory);
-    }
+  if (selectedCategory) {
+    filtered = filtered.filter(p => p.category === selectedCategory);
+  }
 
-    if (selectedSubcategory) {
-        filtered = filtered.filter(p => p.subcategory === selectedSubcategory);
-    }
+  if (selectedSubcategory) {
+    filtered = filtered.filter(p => p.subcategory === selectedSubcategory);
+  }
 
-    if (currentSearchTerm) {
-        filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(currentSearchTerm) ||
-            (p.description && p.description.toLowerCase().includes(currentSearchTerm)) ||
-            (p.searchTags && p.searchTags.toLowerCase().includes(currentSearchTerm))
-        );
-    }
+  if (currentSearchTerm) {
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(currentSearchTerm) ||
+      (p.description && p.description.toLowerCase().includes(currentSearchTerm)) ||
+      (p.searchTags && p.searchTags.toLowerCase().includes(currentSearchTerm))
+    );
+  }
 
-    if (currentSortOrder === 'low-to-high') {
-        filtered.sort((a, b) => parseFloat(a.price.replace(',', '.')) - parseFloat(b.price.replace(',', '.')));
-    } else if (currentSortOrder === 'high-to-low') {
-        filtered.sort((a, b) => parseFloat(b.price.replace(',', '.')) - parseFloat(a.price.replace(',', '.')));
-    }
+  if (currentSortOrder === 'low-to-high') {
+    filtered.sort((a, b) => parseFloat(a.price.replace(',', '.')) - parseFloat(b.price.replace(',', '.')));
+  } else if (currentSortOrder === 'high-to-low') {
+    filtered.sort((a, b) => parseFloat(b.price.replace(',', '.')) - parseFloat(a.price.replace(',', '.')));
+  }
 
-    updateFilterIndicator();
-    renderProducts(filtered);
+  updateFilterIndicator();
+  renderProducts(filtered);
 }
 
 function renderProducts(products) {
-    let html = '';
-    products.forEach((p, idx) => {
-        const realIndex = allProducts.findIndex(item => item.name === p.name);
-        const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
-        const isVisibleFirst = idx < 4;
-        const loadingAttr = isVisibleFirst ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+  let html = '';
+  products.forEach((p, idx) => {
+    const realIndex = allProducts.findIndex(item => item.name === p.name);
+    const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
+    const isVisibleFirst = idx < 4;
+    const loadingAttr = isVisibleFirst ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
 
-        html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
-            <div>
-                <div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden relative">
-                    <img src="${mainImage}" class="max-w-full max-h-full object-contain transition-opacity duration-300" ${loadingAttr} decoding="async">
-                </div>
-                <div class="p-3">
-                    <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3> 
-                    <p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description}</p>
-                </div>
-            </div>
-            <div class="p-3 pt-0">
-                <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80 inline-block mb-1">Оптова ціна</span>
-                <p class="text-slate-800 font-black text-base">${p.price} грн</p> 
-                <button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button>
-            </div>
-        </div>`;
-    });
-    document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
+    html += `<div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
+      <div>
+        <div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden">
+          <img src="${mainImage}" class="max-w-full max-h-full object-contain" ${loadingAttr}>
+        </div>
+        <div class="p-3">
+          <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
+          <p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description}</p>
+        </div>
+      </div>
+      <div class="p-3 pt-0">
+        <p class="text-slate-800 font-black text-base">${p.price} грн</p>
+        <button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
 }
 
 function toggleSortMenu() { document.getElementById('sort-menu').classList.toggle('hidden'); }
 function setSortOrder(order) { currentSortOrder = order; document.getElementById('sort-menu').classList.add('hidden'); applyFilterAndSort(); }
 
 function filterByCategory(cat) {
-    if (selectedCategory === cat) {
-        selectedCategory = null;
-        selectedSubcategory = null;
-    } else {
-        selectedCategory = cat;
-        selectedSubcategory = null;
-    }
-    renderCategories();
-    applyFilterAndSort();
+  if (selectedCategory === cat) {
+    selectedCategory = null;
+    selectedSubcategory = null;
+  } else {
+    selectedCategory = cat;
+    selectedSubcategory = null;
+  }
+  renderCategories();
+  applyFilterAndSort();
 
-    if (selectedCategory) {
-        setTimeout(() => {
-            const anchorEl = document.getElementById('subcat-anchor');
-            if (anchorEl) { anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }, 80);
-    }
+  if (selectedCategory) {
+    setTimeout(() => {
+      const anchorEl = document.getElementById('subcat-anchor');
+      if (anchorEl) anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
 }
 
 function filterBySubcategory(sub) {
-    selectedSubcategory = (selectedSubcategory === sub) ? null : sub;
-    renderSubcategories();
-    applyFilterAndSort();
+  selectedSubcategory = (selectedSubcategory === sub) ? null : sub;
+  renderSubcategories();
+  applyFilterAndSort();
 
-    if (selectedSubcategory) {
-        setTimeout(() => {
-            const anchorEl = document.getElementById('subcat-anchor');
-            if (anchorEl) { anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        }, 50);
-    }
+  if (selectedSubcategory) {
+    setTimeout(() => {
+      const anchorEl = document.getElementById('subcat-anchor');
+      if (anchorEl) anchorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
 }
 
 function filterProducts() { currentSearchTerm = document.getElementById('search').value.toLowerCase(); applyFilterAndSort(); }
@@ -707,402 +741,470 @@ function resetFilters() { selectedCategory = null; selectedSubcategory = null; d
 function goHome() { selectedCategory = null; selectedSubcategory = null; currentSearchTerm = ""; currentSortOrder = "default"; document.getElementById('search').value = ''; renderCategories(); applyFilterAndSort(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
 function updateFilterIndicator() {
-    const indicator = document.getElementById('filter-indicator');
-    const textEl = document.getElementById('filter-indicator-text');
-    let parts = [];
-    if (selectedCategory) parts.push(`Категорія: <b>${selectedCategory}</b>`); 
-    if (selectedSubcategory) parts.push(`Підкатегорія: <b>${selectedSubcategory}</b>`); 
-    if (currentSearchTerm) parts.push(`Пошук: <b>"${currentSearchTerm}"</b>`);
-    
-    if (parts.length > 0) { indicator.classList.remove('hidden'); indicator.classList.add('flex'); textEl.innerHTML = parts.join(' | '); }
-    else { indicator.classList.add('hidden'); indicator.classList.remove('flex'); }
+  const indicator = document.getElementById('filter-indicator');
+  const textEl = document.getElementById('filter-indicator-text');
+  let parts = [];
+  if (selectedCategory) parts.push(`Категорія: <b>${selectedCategory}</b>`);
+  if (selectedSubcategory) parts.push(`Підкатегорія: <b>${selectedSubcategory}</b>`);
+  if (currentSearchTerm) parts.push(`Пошук: <b>"${currentSearchTerm}"</b>`);
+  if (parts.length > 0) {
+    indicator.classList.remove('hidden');
+    indicator.classList.add('flex');
+    textEl.innerHTML = parts.join(' | ');
+  } else {
+    indicator.classList.add('hidden');
+    indicator.classList.remove('flex');
+  }
 }
 
 function addToCartFromList(index) {
-    const p = allProducts[index];
-    const parsedData = parseOptionsField(p.optionsField);
-    let defaultSize = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).sizeName : null;
-    let basePrice = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).price : p.price;
-    let defaultColor = parsedData.colors.length > 0 ? parsedData.colors[0] : null;
-    let defaultScent = parsedData.scents.length > 0 ? parsedData.scents[0] : null;
+  const p = allProducts[index];
+  const parsedData = parseOptionsField(p.optionsField);
+  let defaultSize = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).sizeName : null;
+  let basePrice = parsedData.sizes.length > 0 ? parseSizePrice(parsedData.sizes[0], p.price).price : p.price;
+  let defaultColor = parsedData.colors.length > 0 ? parsedData.colors[0] : null;
+  let defaultScent = parsedData.scents.length > 0 ? parsedData.scents[0] : null;
 
-    addToCart(index, 1, defaultSize, defaultColor, defaultScent, basePrice);
+  addToCart(index, 1, defaultSize, defaultColor, defaultScent, basePrice);
 }
 
 function showProductDetails(index) {
-    currentProductIndex = index;
-    const p = allProducts[index];
-    currentModalQty = 1;
-    document.getElementById('modal-qty').textContent = currentModalQty;
+  currentProductIndex = index;
+  const p = allProducts[index];
+  currentModalQty = 1;
+  document.getElementById('modal-qty').textContent = currentModalQty;
 
-    let validImages = [];
-    if (p.images && p.images.length > 0) {
-        validImages = p.images.map(url => url.trim()).filter(url => url.startsWith('http'));
+  let validImages = [];
+  if (p.images && p.images.length > 0) {
+    validImages = p.images.map(url => url.trim()).filter(url => url.startsWith('http'));
+  }
+
+  currentPhotos = validImages.length > 0 ? validImages : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=60'];
+  currentPhotoIndex = 0;
+  updateModalPhoto();
+
+  if (currentPhotos.length > 1) {
+    setTimeout(() => {
+      for (let i = 1; i < currentPhotos.length; i++) {
+        const img = new Image();
+        img.src = currentPhotos[i];
+      }
+    }, 100);
+  }
+
+  let displayCategoryName = p.category;
+  if (p.subcategory) displayCategoryName += ` / ${p.subcategory}`;
+  document.getElementById('modal-product-category').textContent = displayCategoryName;
+
+  document.getElementById('modal-product-name').textContent = p.name;
+  document.getElementById('modal-product-description').textContent = p.description || 'Опис відсутній';
+
+  const sizeSelect = document.getElementById('modal-size-select');
+  const sizeBlock = document.getElementById('size-selector-block');
+  const sizeLabel = document.getElementById('modal-size-label');
+
+  const colorSelect = document.getElementById('modal-color-select');
+  const colorBlock = document.getElementById('color-selector-block');
+  const colorLabel = document.getElementById('modal-color-label');
+
+  const scentSelect = document.getElementById('modal-scent-select');
+  const scentBlock = document.getElementById('scent-selector-block');
+  const scentLabel = document.getElementById('modal-scent-label');
+
+  const parsedData = parseOptionsField(p.optionsField);
+
+  if (parsedData.sizes.length > 0) {
+    sizeBlock.classList.remove('hidden');
+    sizeLabel.textContent = parsedData.sizeLabel;
+    let sizeOptions = parsedData.sizes.map((s, idx) => {
+      let parsed = parseSizePrice(s, p.price);
+      let isSelected = idx === 0 ? 'selected' : '';
+      return `<option value="${parsed.sizeName}" data-price="${parsed.price}" ${isSelected}>${s}</option>`;
+    }).join('');
+    sizeSelect.innerHTML = sizeOptions;
+  } else {
+    sizeBlock.classList.add('hidden');
+    sizeSelect.innerHTML = '';
+  }
+
+  if (parsedData.colors.length > 0) {
+    colorBlock.classList.remove('hidden');
+    colorLabel.textContent = parsedData.colorLabel;
+    let colorOptions = parsedData.colors.map((c, idx) => {
+      let isSelected = idx === 0 ? 'selected' : '';
+      return `<option value="${c}" data-index="${idx}" ${isSelected}>${c}</option>`;
+    }).join('');
+    colorSelect.innerHTML = colorOptions;
+  } else {
+    colorBlock.classList.add('hidden');
+    colorSelect.innerHTML = '';
+  }
+
+  if (parsedData.scents.length > 0) {
+    scentBlock.classList.remove('hidden');
+    scentLabel.textContent = parsedData.scentLabel;
+    let scentOptions = parsedData.scents.map((sc, idx) => {
+      let isSelected = idx === 0 ? 'selected' : '';
+      return `<option value="${sc}" ${isSelected}>${sc}</option>`;
+    }).join('');
+    scentSelect.innerHTML = scentOptions;
+  } else {
+    scentBlock.classList.add('hidden');
+    scentSelect.innerHTML = '';
+  }
+
+  updateModalPrice();
+  setTimeout(() => { syncColorByPhoto(); }, 10);
+
+  document.getElementById('modal-product-btn').onclick = function() {
+    let chosenSize = (!sizeBlock.classList.contains('hidden')) ? sizeSelect.value : null;
+    let chosenColor = (!colorBlock.classList.contains('hidden')) ? colorSelect.value : null;
+    let chosenScent = (!scentBlock.classList.contains('hidden')) ? scentSelect.value : null;
+
+    if (!sizeBlock.classList.contains('hidden') && !chosenSize) {
+      showToast("❌ Будь ласка, оберіть потрібний варіант!", "error");
+      return;
+    }
+    if (!colorBlock.classList.contains('hidden') && !chosenColor) {
+      showToast("❌ Будь ласка, оберіть колір товару!", "error");
+      return;
+    }
+    if (!scentBlock.classList.contains('hidden') && !chosenScent) {
+      showToast("❌ Будь ласка, оберіть запах товару!", "error");
+      return;
     }
 
-    currentPhotos = validImages.length > 0 ? validImages : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=60'];
-    currentPhotoIndex = 0;
-    updateModalPhoto();
-
-    if (currentPhotos.length > 1) {
-        setTimeout(() => {
-            for (let i = 1; i < currentPhotos.length; i++) {
-                const img = new Image();
-                img.src = currentPhotos[i];
-            }
-        }, 100);
+    let activePrice = p.price;
+    if (!sizeBlock.classList.contains('hidden') && sizeSelect.selectedOptions.length > 0) {
+      activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
     }
+    addToCart(index, currentModalQty, chosenSize, chosenColor, chosenScent, activePrice);
+    hideProductModal();
+  };
 
-    let displayCategoryName = p.category;
-    if (p.subcategory) displayCategoryName += ` / ${p.subcategory}`;
-    document.getElementById('modal-product-category').textContent = displayCategoryName;
-
-    document.getElementById('modal-product-name').textContent = p.name;
-    document.getElementById('modal-product-description').textContent = p.description || 'Опис відсутній';
-
-    const sizeSelect = document.getElementById('modal-size-select');
-    const sizeBlock = document.getElementById('size-selector-block');
-    const sizeLabel = document.getElementById('modal-size-label');
-
-    const colorSelect = document.getElementById('modal-color-select');
-    const colorBlock = document.getElementById('color-selector-block');
-    const colorLabel = document.getElementById('modal-color-label');
-
-    const scentSelect = document.getElementById('modal-scent-select');
-    const scentBlock = document.getElementById('scent-selector-block');
-    const scentLabel = document.getElementById('modal-scent-label');
-
-    const parsedData = parseOptionsField(p.optionsField);
-
-    if (parsedData.sizes.length > 0) {
-        sizeBlock.classList.remove('hidden');
-        sizeLabel.textContent = parsedData.sizeLabel;
-        let sizeOptions = parsedData.sizes.map((s, idx) => {
-            let parsed = parseSizePrice(s, p.price);
-            let isSelected = idx === 0 ? 'selected' : '';
-            return `<option value="${parsed.sizeName}" data-price="${parsed.price}" ${isSelected}>${s}</option>`;
-        }).join('');
-        sizeSelect.innerHTML = sizeOptions;
-    } else {
-        sizeBlock.classList.add('hidden');
-        sizeSelect.innerHTML = '';
-    }
-
-    if (parsedData.colors.length > 0) {
-        colorBlock.classList.remove('hidden');
-        colorLabel.textContent = parsedData.colorLabel;
-        let colorOptions = parsedData.colors.map((c, idx) => {
-            let isSelected = idx === 0 ? 'selected' : '';
-            return `<option value="${c}" data-index="${idx}" ${isSelected}>${c}</option>`;
-        }).join('');
-        colorSelect.innerHTML = colorOptions;
-    } else {
-        colorBlock.classList.add('hidden');
-        colorSelect.innerHTML = '';
-    }
-
-    if (parsedData.scents.length > 0) {
-        scentBlock.classList.remove('hidden');
-        scentLabel.textContent = parsedData.scentLabel;
-        let scentOptions = parsedData.scents.map((sc, idx) => {
-            let isSelected = idx === 0 ? 'selected' : '';
-            return `<option value="${sc}" ${isSelected}>${sc}</option>`;
-        }).join('');
-        scentSelect.innerHTML = scentOptions;
-    } else {
-        scentBlock.classList.add('hidden');
-        scentSelect.innerHTML = '';
-    }
-
-    updateModalPrice();
-    setTimeout(() => { syncColorByPhoto(); }, 10);
-
-    document.getElementById('modal-product-btn').onclick = function() {
-        let chosenSize = (!sizeBlock.classList.contains('hidden')) ? sizeSelect.value : null;
-        let chosenColor = (!colorBlock.classList.contains('hidden')) ? colorSelect.value : null;
-        let chosenScent = (!scentBlock.classList.contains('hidden')) ? scentSelect.value : null;
-
-        if (!sizeBlock.classList.contains('hidden') && !chosenSize) {
-            showToast("❌ Будь ласка, оберіть потрібний варіант!", "error");
-            return;
-        }
-        if (!colorBlock.classList.contains('hidden') && !chosenColor) {
-            showToast("❌ Будь ласка, оберіть колір товару!", "error");
-            return;
-        }
-        if (!scentBlock.classList.contains('hidden') && !chosenScent) {
-            showToast("❌ Будь ласка, оберіть запах товару!", "error");
-            return;
-        }
-
-        let activePrice = p.price;
-        if (!sizeBlock.classList.contains('hidden') && sizeSelect.selectedOptions.length > 0) {
-            activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
-        }
-        addToCart(index, currentModalQty, chosenSize, chosenColor, chosenScent, activePrice);
-        hideProductModal();
-    };
-
-    history.pushState({modal: "product"}, null, null);
-    document.getElementById('product-modal').classList.remove('hidden');
+  history.pushState({modal: "product"}, null, null);
+  document.getElementById('product-modal').classList.remove('hidden');
 }
 
 function updateModalPrice() {
-    if (currentProductIndex === null) return;
-    const p = allProducts[currentProductIndex];
-    const sizeSelect = document.getElementById('modal-size-select');
-    const sizeBlock = document.getElementById('size-selector-block');
+  if (currentProductIndex === null) return;
+  const p = allProducts[currentProductIndex];
+  const sizeSelect = document.getElementById('modal-size-select');
+  const sizeBlock = document.getElementById('size-selector-block');
 
-    let activePrice = p.price;
-    if (!sizeBlock.classList.contains('hidden') && sizeSelect.value && sizeSelect.selectedOptions.length > 0) {
-        activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
-    }
-    let cleanNum = parseFloat(String(activePrice).replace(/\s/g, '').replace(',', '.'));
-    let totalPrice = cleanNum * currentModalQty;
-    document.getElementById('modal-product-price').textContent = totalPrice.toFixed(2).replace('.', ',') + ' грн';
+  let activePrice = p.price;
+  if (!sizeBlock.classList.contains('hidden') && sizeSelect.value && sizeSelect.selectedOptions.length > 0) {
+    activePrice = sizeSelect.selectedOptions[0].getAttribute('data-price');
+  }
+  let cleanNum = parseFloat(String(activePrice).replace(/\s/g, '').replace(',', '.'));
+  let totalPrice = cleanNum * currentModalQty;
+  document.getElementById('modal-product-price').textContent = totalPrice.toFixed(2).replace('.', ',') + ' грн';
 }
 
 function updateModalPhoto() {
-    if (currentPhotos.length === 0) return;
-    document.getElementById('modal-product-image').src = currentPhotos[currentPhotoIndex];
-    const prevBtn = document.getElementById('prev-photo-btn');
-    const nextBtn = document.getElementById('next-photo-btn');
-    const counter = document.getElementById('photo-counter');
+  if (currentPhotos.length === 0) return;
+  document.getElementById('modal-product-image').src = currentPhotos[currentPhotoIndex];
+  const prevBtn = document.getElementById('prev-photo-btn');
+  const nextBtn = document.getElementById('next-photo-btn');
+  const counter = document.getElementById('photo-counter');
 
-    if (currentPhotos.length > 1) {
-        prevBtn.classList.remove('hidden'); nextBtn.classList.remove('hidden'); counter.classList.remove('hidden');
-        counter.textContent = `${currentPhotoIndex + 1} із ${currentPhotos.length}`;
-    } else {
-        prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden'); counter.classList.add('hidden');
-    }
+  if (currentPhotos.length > 1) {
+    prevBtn.classList.remove('hidden'); nextBtn.classList.remove('hidden'); counter.classList.remove('hidden');
+    counter.textContent = `${currentPhotoIndex + 1} із ${currentPhotos.length}`;
+  } else {
+    prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden'); counter.classList.add('hidden');
+  }
 }
 
 function syncColorByPhoto() {
-    const colorSelect = document.getElementById('modal-color-select');
-    const colorBlock = document.getElementById('color-selector-block');
-    if (!colorSelect || colorBlock.classList.contains('hidden') || !colorSelect.options.length) return;
+  const colorSelect = document.getElementById('modal-color-select');
+  const colorBlock = document.getElementById('color-selector-block');
+  if (!colorSelect || colorBlock.classList.contains('hidden') || !colorSelect.options.length) return;
 
-    if (currentPhotoIndex < colorSelect.options.length) {
-        colorSelect.selectedIndex = currentPhotoIndex;
-    }
+  let expectedSelectedIndex = currentPhotoIndex;
+  if (expectedSelectedIndex < colorSelect.options.length) {
+    colorSelect.selectedIndex = expectedSelectedIndex;
+  }
 }
 
 function syncPhotoByColor() {
-    const colorSelect = document.getElementById('modal-color-select');
-    if (colorSelect && colorSelect.selectedIndex >= 0 && colorSelect.selectedIndex < currentPhotos.length) {
-        currentPhotoIndex = colorSelect.selectedIndex;
-        updateModalPhoto();
+  const colorSelect = document.getElementById('modal-color-select');
+  if (!colorSelect || !colorSelect.options.length) return;
+
+  let selectedIdx = colorSelect.selectedIndex;
+  if (selectedIdx >= 0 && selectedIdx < currentPhotos.length) {
+    currentPhotoIndex = selectedIdx;
+    updateModalPhoto();
+    if (!document.getElementById('fullscreen-lightbox').classList.contains('hidden')) {
+      updateLightboxImage();
     }
+  }
+}
+
+function changePhoto(direction) {
+  if (currentPhotos.length <= 1) return;
+  currentPhotoIndex = (currentPhotoIndex + direction + currentPhotos.length) % currentPhotos.length;
+  updateModalPhoto();
+  syncColorByPhoto();
 }
 
 function changeModalQty(delta) {
-    currentModalQty += delta;
-    if (currentModalQty < 1) currentModalQty = 1;
-    document.getElementById('modal-qty').textContent = currentModalQty;
-    updateModalPrice();
-}
-
-function changePhoto(dir) {
-    if (currentPhotos.length <= 1) return;
-    currentPhotoIndex += dir;
-    if (currentPhotoIndex < 0) currentPhotoIndex = currentPhotos.length - 1;
-    if (currentPhotoIndex >= currentPhotos.length) currentPhotoIndex = 0;
-    updateModalPhoto();
-    syncColorByPhoto();
-}
-
-function openFullscreenPhoto() {
-    const lightbox = document.getElementById('fullscreen-lightbox');
-    lightbox.classList.remove('hidden');
-    updateLightboxImage();
-    history.pushState({modal: "lightbox"}, null, null);
-}
-
-function closeFullscreenPhoto() {
-    document.getElementById('fullscreen-lightbox').classList.add('hidden');
-    if (window.history.state?.modal === "lightbox") history.back();
-}
-
-function updateLightboxImage() {
-    if (pzInstance) { pzInstance.destroy(); pzInstance = null; }
-    const container = document.getElementById('lightbox-content-area');
-    container.innerHTML = `<div class="pinch-zoom-container"><img src="${currentPhotos[currentPhotoIndex]}" class="zoomable-img"></div>`;
-    if (typeof PinchZoom !== 'undefined') {
-        pzInstance = new PinchZoom.default(container.querySelector('.pinch-zoom-container'), { draggableUnzoomed: false, minZoom: 1, maxZoom: 4 });
-    }
-}
-
-function addToCart(index, qty, size, color, scent, price) {
-    const p = allProducts[index];
-    const existingIndex = cart.findIndex(item => item.name === p.name && item.size === size && item.color === color && item.scent === scent);
-    
-    if (existingIndex > -1) {
-        cart[existingIndex].qty += qty;
-    } else {
-        cart.push({ name: p.name, price: price, size: size, color: color, scent: scent, qty: qty });
-    }
-    updateCartCount();
-    showToast("✅ Товар додано в кошик");
-}
-
-function updateCartCount() {
-    const count = cart.reduce((sum, item) => sum + item.qty, 0);
-    document.getElementById('cart-count').textContent = count;
-}
-
-function showCart() {
-    renderCartItems();
-    document.getElementById('cart-modal').classList.remove('hidden');
-    history.pushState({modal: "cart"}, null, null);
-}
-
-// ИСПРАВЛЕННОЕ ЗАКРЫТИЕ КОШЕЛЕК
-function hideCart(fromPopState = false, keepHistory = false) {
-    document.getElementById('cart-modal').classList.add('hidden');
-    if (!fromPopState && !keepHistory && window.history.state?.modal === "cart") {
-        history.back();
-    }
-}
-
-function renderCartItems() {
-    const container = document.getElementById('cart-items');
-    if (cart.length === 0) {
-        container.innerHTML = '<div class="text-center py-10 text-slate-400 font-medium">Кошик порожній</div>';
-        document.getElementById('cart-total').textContent = '0 грн';
-        return;
-    }
-
-    let html = '';
-    let total = 0;
-
-    cart.forEach((item, idx) => {
-        let cleanPrice = parseFloat(String(item.price).replace(/\s/g, '').replace(',', '.'));
-        let lineTotal = cleanPrice * item.qty;
-        total += lineTotal;
-
-        let details = [];
-        if (item.size) details.push(item.size);
-        if (item.color) details.push(item.color);
-        if (item.scent) details.push(item.scent);
-        let detailsStr = details.length > 0 ? `<div class="text-[11px] text-slate-400 mt-0.5">${details.join(', ')}</div>` : '';
-
-        html += `
-        <div class="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
-            <div class="flex-1 pr-3">
-                <div class="text-sm font-bold text-slate-800 leading-tight">${item.name}</div>
-                ${detailsStr}
-                <div class="text-xs font-semibold text-slate-600 mt-1">${item.price} грн / шт</div>
-            </div>
-            <div class="flex items-center gap-2 bg-slate-50 rounded-xl p-1 border border-slate-100">
-                <button onclick="changeCartQty(${idx}, -1)" class="w-8 h-8 flex items-center justify-center font-bold text-slate-600 active:bg-slate-200 rounded-lg">-</button>
-                <span class="w-6 text-center text-sm font-bold">${item.qty}</span>
-                <button onclick="changeCartQty(${idx}, 1)" class="w-8 h-8 flex items-center justify-center font-bold text-slate-600 active:bg-slate-200 rounded-lg">+</button>
-            </div>
-        </div>`;
-    });
-    container.innerHTML = html;
-    document.getElementById('cart-total').textContent = total.toFixed(2).replace('.', ',') + ' грн';
-}
-
-function changeCartQty(idx, delta) {
-    cart[idx].qty += delta;
-    if (cart[idx].qty <= 0) cart.splice(idx, 1);
-    updateCartCount();
-    renderCartItems();
-}
-
-// ИСПРАВЛЕННЫЙ ПЕРЕХОД В ОФОРМЛЕНИЕ
-function showCheckoutModal() {
-    if (cart.length === 0) {
-        showToast("Кошик порожній!", "error");
-        return;
-    }
-    hideCart(false, true); 
-    document.getElementById('checkout-modal').classList.remove('hidden');
-    history.replaceState({modal: "checkout"}, null, null);
-}
-
-function hideCheckoutModal(fromPopState = false) {
-    document.getElementById('checkout-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "checkout") {
-        history.back();
-    }
-}
-
-// ИСПРАВЛЕННАЯ ОТПРАВКА ЗАКАЗА
-function submitOrder() {
-    const name = document.getElementById('customer-name').value.trim();
-    const phone = document.getElementById('customer-phone').value.trim();
-
-    if (!name || !phone) {
-        showToast("Будь ласка, заповніть всі поля!", "error");
-        return;
-    }
-
-    let messageText = `🛍️ НОВЕ ОПТОВЕ ЗАМОВЛЕННЯ!\n\n`;
-    messageText += `👤 Ім'я: ${name}\n`;
-    messageText += `📞 Телефон: ${phone}\n\n`;
-    messageText += `📦 Товари:\n`;
-
-    let totalSumNum = 0;
-    cart.forEach((item, i) => {
-        let cleanPrice = parseFloat(String(item.price).replace(/\s/g, '').replace(',', '.'));
-        let itemTotal = cleanPrice * item.qty;
-        totalSumNum += itemTotal;
-
-        let details = [];
-        if (item.size) details.push(`Варіант: ${item.size}`);
-        if (item.color) details.push(`Колір: ${item.color}`);
-        if (item.scent) details.push(`Запах: ${item.scent}`);
-        let detailsStr = details.length > 0 ? ` (${details.join(', ')})` : '';
-
-        messageText += `${i+1}. ${item.name}${detailsStr}\n   └ ${item.qty} шт. × ${item.price} грн = ${itemTotal.toFixed(2).replace('.', ',')} грн\n`;
-    });
-
-    messageText += `\n💰 Загальна сума: ${totalSumNum.toFixed(2).replace('.', ',')} грн`;
-
-    const telegramUrl = `https://t.me/ElMarinooptbot?text=${encodeURIComponent(messageText)}`;
-
-    cart = [];
-    updateCartCount();
-    
-    document.getElementById('checkout-modal').classList.add('hidden');
-    if (window.history.state?.modal === "checkout") {
-        history.back();
-    }
-    
-    window.location.href = telegramUrl;
+  currentModalQty += delta;
+  if (currentModalQty < 1) currentModalQty = 1;
+  document.getElementById('modal-qty').textContent = currentModalQty;
+  updateModalPrice();
 }
 
 function hideProductModal(fromPopState = false) {
-    document.getElementById('product-modal').classList.add('hidden');
-    if (!fromPopState && window.history.state?.modal === "product") history.back();
+  document.getElementById('product-modal').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "product") history.back();
+}
+
+function openFullscreenPhoto() {
+  const lightbox = document.getElementById('fullscreen-lightbox');
+  lightbox.classList.remove('hidden');
+  updateLightboxImage();
+  history.pushState({modal: "lightbox"}, null, null);
+}
+
+function updateLightboxImage() {
+  const container = document.getElementById('lightbox-content-area');
+  container.innerHTML = `<div class="pinch-zoom-container"><img class="zoomable-img" src="${currentPhotos[currentPhotoIndex]}"></div>`;
+
+  if (pzInstance) {
+    try { pzInstance.destroy(); } catch(e){}
+    pzInstance = null;
+  }
+
+  const zoomEl = container.querySelector('.pinch-zoom-container');
+  if (zoomEl && window.PinchZoom) {
+    pzInstance = new PinchZoom(zoomEl, {
+      draggableUnzoomed: false,
+      minZoom: 1,
+      maxZoom: 4
+    });
+  }
+
+  const prevBtn = document.getElementById('lightbox-prev-btn');
+  const nextBtn = document.getElementById('lightbox-next-btn');
+
+  if (currentPhotos.length > 1) {
+    prevBtn.classList.remove('hidden'); nextBtn.classList.remove('hidden');
+  } else {
+    prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden');
+  }
+}
+
+function closeFullscreenPhoto(fromPopState = false) {
+  if (pzInstance) {
+    try { pzInstance.destroy(); } catch(e){}
+    pzInstance = null;
+  }
+  document.getElementById('fullscreen-lightbox').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "lightbox") history.back();
 }
 
 function initSwipeListeners() {
-    const swipeZone = document.getElementById('modal-swipe-zone');
-    if (!swipeZone) return;
+  const zone = document.getElementById('modal-swipe-zone');
+  if (!zone) return;
 
-    swipeZone.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-        ignoreSwipe = false;
-    }, {passive: true});
+  zone.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, {passive: true});
 
-    swipeZone.addEventListener('touchmove', e => {
-        if (e.touches.length > 1) ignoreSwipe = true;
-    }, {passive: true});
-
-    swipeZone.addEventListener('touchend', e => {
-        if (ignoreSwipe) return;
-        touchEndX = e.changedTouches[0].screenX;
-        const threshold = 50;
-        if (touchEndX < touchStartX - threshold) changePhoto(1);
-        if (touchEndX > touchStartX + threshold) changePhoto(-1);
-    }, {passive: true});
+  zone.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, {passive: true});
 }
 
+function handleSwipe() {
+  const swipeThreshold = 50;
+  if (touchEndX < touchStartX - swipeThreshold) {
+    changePhoto(1);
+  }
+  if (touchEndX > touchStartX + swipeThreshold) {
+    changePhoto(-1);
+  }
+}
+
+function addToCart(index, qty = 1, size = null, color = null, scent = null, customPrice = null) {
+  const p = allProducts[index];
+  const finalPrice = customPrice || p.price;
+
+  const cartItemId = `${p.name}_${size || 'def'}_${color || 'def'}_${scent || 'def'}`;
+  const existingIndex = cart.findIndex(item => item.id === cartItemId);
+
+  if (existingIndex > -1) {
+    cart[existingIndex].qty += qty;
+  } else {
+    cart.push({
+      id: cartItemId,
+      name: p.name,
+      price: finalPrice,
+      size: size,
+      color: color,
+      scent: scent,
+      qty: qty,
+      image: p.images.length > 0 ? p.images[0] : ''
+    });
+  }
+
+  updateCartCount();
+  showToast("✅ Додано в кошик!");
+}
+
+function updateCartCount() {
+  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cart-count').textContent = totalQty;
+}
+
+function showCart() {
+  renderCartItems();
+  document.getElementById('cart-modal').classList.remove('hidden');
+  history.pushState({modal: "cart"}, null, null);
+}
+
+function hideCart(fromPopState = false) {
+  document.getElementById('cart-modal').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "cart") history.back();
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cart-items');
+  if (cart.length === 0) {
+    container.innerHTML = `<p class="text-center text-slate-400 py-8 font-medium">Ваш кошик порожній 🛒</p>`;
+    document.getElementById('cart-total').textContent = '0 грн';
+    return;
+  }
+
+  let html = '';
+  let grandTotal = 0;
+
+  cart.forEach((item, idx) => {
+    const numPrice = parseFloat(String(item.price).replace(/\s/g, '').replace(',', '.'));
+    const itemTotal = numPrice * item.qty;
+    grandTotal += itemTotal;
+
+    let optionsText = [];
+    if (item.size) optionsText.push(`Варіант: ${item.size}`);
+    if (item.color) optionsText.push(`Колір: ${item.color}`);
+    if (item.scent) optionsText.push(`Запах: ${item.scent}`);
+
+    html += `<div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+      <img src="${item.image}" class="w-16 h-16 object-contain rounded-xl bg-white border border-slate-100 p-1 shrink-0">
+      <div class="flex-1 min-w-0">
+        <h4 class="font-bold text-slate-800 text-sm truncate">${item.name}</h4>
+        ${optionsText.length > 0 ? `<p class="text-xs text-slate-500 mt-0.5">${optionsText.join(' | ')}</p>` : ''}
+        <p class="text-amber-700 font-black text-sm mt-1">${numPrice.toFixed(2).replace('.', ',')} грн</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center border rounded-xl bg-white overflow-hidden shadow-sm">
+          <button onclick="changeCartQty(${idx}, -1)" class="w-7 h-8 font-bold text-slate-600 active:bg-slate-100">-</button>
+          <span class="w-7 text-center font-bold text-xs text-slate-800">${item.qty}</span>
+          <button onclick="changeCartQty(${idx}, 1)" class="w-7 h-8 font-bold text-slate-600 active:bg-slate-100">+</button>
+        </div>
+        <button onclick="removeFromCart(${idx})" class="text-slate-400 hover:text-red-500 p-1.5 text-lg">✕</button>
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('cart-total').textContent = grandTotal.toFixed(2).replace('.', ',') + ' грн';
+}
+
+function changeCartQty(index, delta) {
+  cart[index].qty += delta;
+  if (cart[index].qty <= 0) {
+    cart.splice(index, 1);
+  }
+  updateCartCount();
+  renderCartItems();
+}
+
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCartCount();
+  renderCartItems();
+}
+
+function showCheckoutModal() {
+  if (cart.length === 0) {
+    showToast("⚠️ Кошик порожній!", "error");
+    return;
+  }
+  document.getElementById('checkout-modal').classList.remove('hidden');
+  history.pushState({modal: "checkout"}, null, null);
+}
+
+function hideCheckoutModal(fromPopState = false) {
+  document.getElementById('checkout-modal').classList.add('hidden');
+  if (!fromPopState && window.history.state?.modal === "checkout") history.back();
+}
+
+async function submitOrder() {
+  const name = document.getElementById('customer-name').value.trim();
+  const phone = document.getElementById('customer-phone').value.trim();
+
+  if (!name || !phone) {
+    showToast("❌ Будь ласка, заповніть ім'я та телефон!", "error");
+    return;
+  }
+
+  let totalSum = 0;
+  let itemsMessage = '';
+
+  cart.forEach((item, idx) => {
+    const numPrice = parseFloat(String(item.price).replace(/\s/g, '').replace(',', '.'));
+    const itemTotal = numPrice * item.qty;
+    totalSum += itemTotal;
+
+    let opts = [];
+    if (item.size) opts.push(`Варіант: ${item.size}`);
+    if (item.color) opts.push(`Колір: ${item.color}`);
+    if (item.scent) opts.push(`Запах: ${item.scent}`);
+    let optsStr = opts.length > 0 ? ` (${opts.join(', ')})` : '';
+
+    itemsMessage += `${idx + 1}. <b>${item.name}</b>${optsStr}\n   └ ${item.qty} шт. x ${numPrice.toFixed(2)} грн = <b>${itemTotal.toFixed(2)} грн</b>\n`;
+  });
+
+  const message = `🛍️ <b>НОВЕ ЗАМОВЛЕННЯ (Роздріб)</b>\n\n` +
+                  `👤 <b>Покупець:</b> ${name}\n` +
+                  `📞 <b>Телефон:</b> ${phone}\n\n` +
+                  `📦 <b>Товари:</b>\n${itemsMessage}\n` +
+                  `💰 <b>Загальна сума:</b> <b>${totalSum.toFixed(2)} грн</b>`;
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        parse_mode: 'HTML',
+        text: message
+      })
+    });
+
+    if (response.ok) {
+      showToast("🚀 Замовлення успішно надіслано!");
+      cart = [];
+      updateCartCount();
+      document.getElementById('customer-name').value = '';
+      document.getElementById('customer-phone').value = '';
+      hideCheckoutModal();
+      hideCart();
+    } else {
+      throw new Error("Не вдалося відправити замовлення у Telegram");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Помилка при відправці замовлення. Спробуйте ще раз.", "error");
+  }
+}
+
+// Запуск завантаження при старті
 window.addEventListener('DOMContentLoaded', () => {
-    loadProductsFromSheet();
+  loadProductsFromSheet();
 });
 </script>
 </body>
