@@ -16,7 +16,12 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body { font-family: system-ui, sans-serif; }
-.product-card { transition: all 0.2s ease; cursor: pointer; }
+.product-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 280px;
+}
 .product-card:active { transform: scale(0.98); }
 .clamp-desc {
   display: -webkit-box !important;
@@ -24,6 +29,13 @@ body { font-family: system-ui, sans-serif; }
   -webkit-box-orient: vertical !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+}
+.product-img {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.product-img.is-loaded {
+  opacity: 1;
 }
 #lightbox-img {
   transition: transform 0.1s ease-out;
@@ -728,6 +740,44 @@ function applyFilterAndSort() {
   renderProducts(filtered);
 }
 
+let imageObserver = null;
+
+function initLazyImages() {
+  if (imageObserver) imageObserver.disconnect();
+
+  const imgs = document.querySelectorAll('img.product-img[data-src]');
+  if (!imgs.length) return;
+
+  // Якщо браузер не підтримує IntersectionObserver — вантажимо все одразу
+  if (!('IntersectionObserver' in window)) {
+    imgs.forEach(img => loadProductImage(img));
+    return;
+  }
+
+  imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadProductImage(entry.target);
+        imageObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '200px 0px', // починаємо вантажити за 200px до появи на екрані
+    threshold: 0.01
+  });
+
+  imgs.forEach(img => imageObserver.observe(img));
+}
+
+function loadProductImage(img) {
+  const src = img.getAttribute('data-src');
+  if (!src) return;
+  img.removeAttribute('data-src');
+  img.onload = () => img.classList.add('is-loaded');
+  img.onerror = () => img.classList.add('is-loaded');
+  img.src = src;
+}
+
 function renderProducts(products) {
   const nameToIndex = new Map();
   allProducts.forEach((item, i) => nameToIndex.set(item.name, i));
@@ -735,14 +785,18 @@ function renderProducts(products) {
   products.forEach((p, idx) => {
     const realIndex = nameToIndex.get(p.name) ?? 0;
     const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
-    const loadingType = idx < 6 ? 'eager' : 'lazy';
-    const fetchPriority = idx < 4 ? 'high' : 'auto';
+    // Перші 4 — одразу, решта через IntersectionObserver
+    const isAboveFold = idx < 4;
+    const imgTag = isAboveFold
+      ? `<img src="${mainImage}" class="product-img is-loaded max-w-full max-h-full object-contain" loading="eager" decoding="async" fetchpriority="high" alt="${p.name}">`
+      : `<img data-src="${mainImage}" class="product-img max-w-full max-h-full object-contain" loading="lazy" decoding="async" alt="${p.name}">`;
+
     html += `
       <div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
         <div>
           <div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden relative">
             <span class="opt-badge">ОПТ</span>
-            <img src="${mainImage}" class="max-w-full max-h-full object-contain" loading="${loadingType}" decoding="async" fetchpriority="${fetchPriority}" alt="${p.name}">
+            ${imgTag}
           </div>
           <div class="p-3">
             <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
@@ -756,6 +810,8 @@ function renderProducts(products) {
       </div>`;
   });
   document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
+  // Запускаємо ліниве завантаження після малювання
+  requestAnimationFrame(() => initLazyImages());
 }
 
 function toggleSortMenu() {
