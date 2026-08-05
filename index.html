@@ -598,13 +598,15 @@ function hideReviewsModal(fromPopState = false) {
 async function loadProductsFromSheet() {
   const CACHE_KEY = 'elmarino_opt_products_cache';
   const CACHE_TIME_KEY = 'elmarino_opt_cache_time';
-  const CACHE_EXPIRE = 2 * 60 * 1000;
+  // 15 хвилин — повторний вхід майже миттєвий
+  const CACHE_EXPIRE = 15 * 60 * 1000;
 
   const cachedData = localStorage.getItem(CACHE_KEY);
   const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
   const now = Date.now();
   const isCacheValid = cachedData && cachedTime && (now - parseInt(cachedTime) < CACHE_EXPIRE);
 
+  // Спочатку показуємо кеш (навіть застарілий) — магазин відкривається одразу
   if (cachedData) {
     try {
       allProducts = JSON.parse(cachedData);
@@ -616,7 +618,8 @@ async function loadProductsFromSheet() {
   if (isCacheValid) return;
 
   try {
-    const response = await fetch(SPREADSHEET_URL, { cache: 'no-store' });
+    // default cache дозволяє браузеру використати HTTP-кеш, якщо є
+    const response = await fetch(SPREADSHEET_URL);
     if (!response.ok) throw new Error(`Помилка: ${response.status}`);
     const csvText = await response.text();
     let rows = parseCSV(csvText);
@@ -737,10 +740,16 @@ function applyFilterAndSort() {
   }
 
   updateFilterIndicator();
-  renderProducts(filtered);
+  filteredProductsCache = filtered;
+  renderedCount = 0;
+  renderProductsPage(true);
 }
 
 let imageObserver = null;
+let loadMoreObserver = null;
+let filteredProductsCache = [];
+let renderedCount = 0;
+const PAGE_SIZE = 12; // спочатку 12 карток, далі підвантаження
 
 function initLazyImages() {
   if (imageObserver) imageObserver.disconnect();
@@ -748,7 +757,6 @@ function initLazyImages() {
   const imgs = document.querySelectorAll('img.product-img[data-src]');
   if (!imgs.length) return;
 
-  // Якщо браузер не підтримує IntersectionObserver — вантажимо все одразу
   if (!('IntersectionObserver' in window)) {
     imgs.forEach(img => loadProductImage(img));
     return;
@@ -762,7 +770,7 @@ function initLazyImages() {
       }
     });
   }, {
-    rootMargin: '200px 0px', // починаємо вантажити за 200px до появи на екрані
+    rootMargin: '250px 0px',
     threshold: 0.01
   });
 
@@ -778,40 +786,101 @@ function loadProductImage(img) {
   img.src = src;
 }
 
-function renderProducts(products) {
+function buildProductCard(p, idx, realIndex) {
+  const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
+  const isAboveFold = idx < 4 && renderedCount === 0;
+  const imgTag = isAboveFold
+    ? `<img src="${mainImage}" class="product-img is-loaded max-w-full max-h-full object-contain" loading="eager" decoding="async" fetchpriority="high" alt="">`
+    : `<img data-src="${mainImage}" class="product-img max-w-full max-h-full object-contain" loading="lazy" decoding="async" alt="">`;
+
+  return `
+    <div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
+      <div>
+        <div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden relative">
+          <span class="opt-badge">ОПТ</span>
+          ${imgTag}
+        </div>
+        <div class="p-3">
+          <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
+          <p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description || ''}</p>
+        </div>
+      </div>
+      <div class="p-3 pt-0">
+        <p class="text-slate-800 font-black text-base">${p.price} грн</p>
+        <button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button>
+      </div>
+    </div>`;
+}
+
+function renderProductsPage(reset) {
+  const container = document.getElementById('products');
+  const products = filteredProductsCache;
+
+  if (!products.length) {
+    container.innerHTML = '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
+    return;
+  }
+
   const nameToIndex = new Map();
   allProducts.forEach((item, i) => nameToIndex.set(item.name, i));
-  let html = '';
-  products.forEach((p, idx) => {
-    const realIndex = nameToIndex.get(p.name) ?? 0;
-    const mainImage = p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=300&q=60';
-    // Перші 4 — одразу, решта через IntersectionObserver
-    const isAboveFold = idx < 4;
-    const imgTag = isAboveFold
-      ? `<img src="${mainImage}" class="product-img is-loaded max-w-full max-h-full object-contain" loading="eager" decoding="async" fetchpriority="high" alt="${p.name}">`
-      : `<img data-src="${mainImage}" class="product-img max-w-full max-h-full object-contain" loading="lazy" decoding="async" alt="${p.name}">`;
 
-    html += `
-      <div onclick="showProductDetails(${realIndex})" class="product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-between">
-        <div>
-          <div class="w-full h-40 bg-slate-50 flex items-center justify-center overflow-hidden relative">
-            <span class="opt-badge">ОПТ</span>
-            ${imgTag}
-          </div>
-          <div class="p-3">
-            <h3 class="text-sm font-bold text-slate-800 leading-tight line-clamp-2 min-h-[40px]">${p.name}</h3>
-            <p class="text-slate-500 text-xs mt-1 min-h-[32px] clamp-desc">${p.description || ''}</p>
-          </div>
-        </div>
-        <div class="p-3 pt-0">
-          <p class="text-slate-800 font-black text-base">${p.price} грн</p>
-          <button onclick="addToCartFromList(${realIndex}); event.stopPropagation();" class="mt-2 w-full bg-[#242426] active:bg-[#323235] text-amber-400 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm border border-[#3a3a3d]">В кошик</button>
-        </div>
-      </div>`;
-  });
-  document.getElementById('products').innerHTML = html || '<p class="col-span-2 text-center py-10 text-slate-500">Товарів не знайдено</p>';
-  // Запускаємо ліниве завантаження після малювання
+  if (reset) {
+    renderedCount = 0;
+    container.innerHTML = '';
+  }
+
+  const start = renderedCount;
+  const end = Math.min(start + PAGE_SIZE, products.length);
+  let html = '';
+
+  for (let i = start; i < end; i++) {
+    const p = products[i];
+    const realIndex = nameToIndex.get(p.name) ?? 0;
+    html += buildProductCard(p, i - start, realIndex);
+  }
+
+  // Прибираємо старий sentinel
+  const oldSentinel = document.getElementById('load-more-sentinel');
+  if (oldSentinel) oldSentinel.remove();
+
+  container.insertAdjacentHTML('beforeend', html);
+  renderedCount = end;
+
+  // Якщо є ще товари — sentinel для підвантаження
+  if (renderedCount < products.length) {
+    container.insertAdjacentHTML('beforeend',
+      '<div id="load-more-sentinel" class="col-span-2 h-8 flex items-center justify-center text-slate-400 text-xs">⏳</div>'
+    );
+    setupLoadMoreObserver();
+  }
+
   requestAnimationFrame(() => initLazyImages());
+}
+
+function setupLoadMoreObserver() {
+  if (loadMoreObserver) loadMoreObserver.disconnect();
+  const sentinel = document.getElementById('load-more-sentinel');
+  if (!sentinel) return;
+
+  if (!('IntersectionObserver' in window)) {
+    // без observer — кнопка не потрібна, просто довантажимо все при скролі через таймер
+    return;
+  }
+
+  loadMoreObserver = new IntersectionObserver((entries) => {
+    if (entries.some(e => e.isIntersecting)) {
+      loadMoreObserver.disconnect();
+      renderProductsPage(false);
+    }
+  }, { rootMargin: '400px 0px' });
+
+  loadMoreObserver.observe(sentinel);
+}
+
+function renderProducts(products) {
+  filteredProductsCache = products;
+  renderedCount = 0;
+  renderProductsPage(true);
 }
 
 function toggleSortMenu() {
