@@ -598,8 +598,8 @@ function hideReviewsModal(fromPopState = false) {
 async function loadProductsFromSheet() {
   const CACHE_KEY = 'elmarino_opt_products_cache';
   const CACHE_TIME_KEY = 'elmarino_opt_cache_time';
-  // 15 хвилин — повторний вхід майже миттєвий
-  const CACHE_EXPIRE = 15 * 60 * 1000;
+  // 30 хвилин — повторний вхід майже миттєвий
+  const CACHE_EXPIRE = 30 * 60 * 1000;
 
   const cachedData = localStorage.getItem(CACHE_KEY);
   const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
